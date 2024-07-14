@@ -1,13 +1,41 @@
 version: '3'
 
 services: 
+  backend:
+    build: 
+      context: node
+    container_name: backend
+    working_dir: /usr/src/app
+    networks: 
+      - node-network
+    volumes: 
+      - /usr/src/app/node_modules
+    tty: true
+    ports: 
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+  frontend:
+    build: 
+      context: react
+    container_name: frontend
+    working_dir: /usr/src/app
+    networks: 
+      - node-network
+    volumes: 
+      - /usr/src/app/node_modules    
+    tty: true
+    ports: 
+      - "5173:5173"
+
   db:
     image: postgres
     container_name: db
     restart: always
     tty: true
-    # volumes:
-    #   - ./data:/var/lib/postgresql/data
     environment: 
       - POSTGRES_PASSWORD=1234
     ports: 
@@ -23,4 +51,5 @@ services:
   
 networks: 
   node-network:
-    driver: bridge    
+    driver: bridge
+    

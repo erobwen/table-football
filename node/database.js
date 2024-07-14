@@ -3,7 +3,8 @@ const { Client } = pg;
 
 export const client = new Client({
   user: 'postgres',
-  host: 'localhost',
+  // host: 'localhost', // when running outside docker for dev. 
+  host: 'db',
   database: 'postgres',
   password: '1234',
   port: 5432,
