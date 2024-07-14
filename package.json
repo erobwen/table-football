@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "docker-compose up --watch",
+    "clean": "docker-compose down -v --rmi all",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "cd node && npm install && cd .. && cd react && npm install && cd .." 
   },

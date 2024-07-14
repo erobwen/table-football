@@ -6,7 +6,7 @@ import './App.css'
 function App() {
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api")
+      .get("http://localhost:3000/api/users")
       .then((response) => setMessage(response.data))
       .catch((err) => {
         console.error(err);
@@ -17,7 +17,7 @@ function App() {
 
   return (
     <>
-      {message}
+      {JSON.stringify(message)}
     </>
   )
 }
