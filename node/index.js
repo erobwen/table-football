@@ -8,11 +8,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // allow CORS:
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.setHeader(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
+  res.setHeader(`Access-Control-Allow-Headers`, `Content-Type`);
   next()
 })
-
-console.log("here")
 
 app.get('/api', (req, res) => res.send('Hello World!'));
 app.get('/api/users', async (req, res) => {
@@ -25,9 +25,25 @@ app.get('/api/users', async (req, res) => {
     
   } catch (error) {
     res.status(500).send(error);
-    console.log(error);
   } 
 });
+
+app.post('/api/users', async (req, res) => {
+  // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  // console.log(req)
+  try {
+    const response = await client.query(`INSERT INTO users(name) VALUES ('${req.body.name}');`);
+
+    if(response){
+      res.status(200).send("Successfully added user.");
+    }
+    
+  } catch (error) {
+    res.status(500).send("Could not add player, player already exists!");
+  } 
+});
+
 
 app.listen(3000, () => console.log(`App running on port 3000.`));
   

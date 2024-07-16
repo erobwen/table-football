@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Modal, Paper } from "@mui/material";
+import { Box, Button, Grid, Modal, Paper, TextField } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { useLoadedData } from '../../components/hooks';
 import { useCallback, useState } from "react";
@@ -7,18 +7,18 @@ import { RegisterGameModal } from "./RegisterGameModal";
 import { CreateUserModal } from "./CreateUserModal";
 
 export function Dashboard() {
-  // const [users, reload] = useLoadedData("/api/users");
-  const reload = () => {}
-  const users = [
-    {
-      id: 1,
-      name: "Foo",
-    },
-    {
-      id: 2,
-      name: "Bar"
-    }
-  ]
+  const [users, reload] = useLoadedData("/api/users");
+  // const reload = () => {}
+  // const users = [
+  //   {
+  //     id: 1,
+  //     name: "Foo",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Bar"
+  //   }
+  // ]
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
@@ -31,9 +31,17 @@ export function Dashboard() {
   const onCloseCreateUser = useCallback(() => { setCreateUserOpen(false); reload(); });
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
   const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); reload(); });
-
+  const [name, setName] = useState("");
+ 
   return (
     <>
+      <TextField
+          value={name}
+          label="Enter your name"
+          onChange={(e) => {
+              setName(e.target.value);
+          }}
+      />  
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -57,9 +65,9 @@ export function Dashboard() {
           </Grid>
         </Grid>
       </Box>
-      <CreateUserModal open={createUserOpen} onClose={onCloseCreateUser}/>
-      <CreateTeamModal open={createTeamOpen} onClose={onCloseCreateTeam}/>
-      <RegisterGameModal open={registerGameOpen} onClose={onCloseRegisterGame}/>
+      {createUserOpen && <CreateUserModal open={createUserOpen} onClose={onCloseCreateUser}/>}
+      {createTeamOpen && <CreateTeamModal open={createTeamOpen} onClose={onCloseCreateTeam}/>}
+      {registerGameOpen && <RegisterGameModal open={registerGameOpen} onClose={onCloseRegisterGame}/>}
     </>
   )
 }
