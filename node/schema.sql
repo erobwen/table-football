@@ -2,20 +2,22 @@
 CREATE TABLE users (
   id serial PRIMARY KEY,
   name VARCHAR (255) UNIQUE NOT NULL,
-  won_games_total INTEGER, -- cache or query?
-  won_single_games INTEGER,
-  won_double_games INTEGER
+  won_games_total INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
+  won_games_alone INTEGER DEFAULT 0,
+  won_games_in_team INTEGER DEFAULT 0
 );
 
 CREATE TABLE teams (
-  id serial PRIMARY KEY, 
+  id serial PRIMARY KEY,
+  team_key VARCHAR UNIQUE NOT NULL,
   name VARCHAR (255) UNIQUE NOT NULL,
-  player1 INTEGER REFERENCES users,
-  player2 INTEGER REFERENCES users
+  player1_id INTEGER REFERENCES users,
+  player2_id INTEGER REFERENCES users
 );
 
 CREATE TABLE games (
   id serial PRIMARY KEY, 
+  is_ongoing BOOLEAN,
   blue_team INTEGER REFERENCES teams,
   red_team INTEGER REFERENCES teams,
   blue_goals INTEGER,

@@ -8,17 +8,6 @@ import { CreateUserModal } from "./CreateUserModal";
 
 export function Dashboard() {
   const [users, reload] = useLoadedData("/api/users");
-  // const reload = () => {}
-  // const users = [
-  //   {
-  //     id: 1,
-  //     name: "Foo",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Bar"
-  //   }
-  // ]
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
@@ -31,17 +20,9 @@ export function Dashboard() {
   const onCloseCreateUser = useCallback(() => { setCreateUserOpen(false); reload(); });
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
   const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); reload(); });
-  const [name, setName] = useState("");
  
   return (
     <>
-      <TextField
-          value={name}
-          label="Enter your name"
-          onChange={(e) => {
-              setName(e.target.value);
-          }}
-      />  
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -54,7 +35,7 @@ export function Dashboard() {
             <Paper>
               <Button onClick={onCreateUser} variant="contained">New Player</Button>
               <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
-              <Button onClick={onRegisterGame} variant="contained">Register Game (already finished)</Button>
+              <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
               <Button href="/game" variant="contained">
                 Start Game!
               </Button>

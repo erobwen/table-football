@@ -1,4 +1,4 @@
-import { client } from './database.js'; 
+import { addTeam, addUser, getAllTeams, getAllUsers } from './database.js'; 
 
 import express from 'express';
 
@@ -14,36 +14,56 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.get('/api', (req, res) => res.send('Hello World!'));
+
+/**
+ * Users
+ */
+
 app.get('/api/users', async (req, res) => {
+  console.log("get Users");
   try {
-    const response = await client.query(`SELECT * FROM users`);
-    
-    if(response){
-      res.status(200).send(response.rows);
-    }
-    
+    res.status(200).send(await getAllUsers());
   } catch (error) {
     res.status(500).send(error);
   } 
 });
 
 app.post('/api/users', async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-  // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  // console.log(req)
   try {
-    const response = await client.query(`INSERT INTO users(name) VALUES ('${req.body.name}');`);
-
-    if(response){
-      res.status(200).send("Successfully added user.");
-    }
-    
+    addUser(req.body.name);
+    res.status(200).send("Successfully added user.");
   } catch (error) {
     res.status(500).send("Could not add player, player already exists!");
   } 
 });
 
+
+/**
+ * Teams
+ */
+
+app.get('/api/teams', async (req, res) => {
+  try {
+    res.status(200).send(await getAllTeams());
+  } catch (error) {
+    res.status(500).send(error);
+  } 
+});
+
+app.post('/api/teams', async (req, res) => {
+  let {name, player1Id, player2Id} = req.body;
+  if (player1Id === player2Id) {
+    res.status(500).send("Players needs to be different in a team.");
+  }
+
+  try {
+    await addTeam(name, player1Id, player2Id); 
+    res.status(200).send("Successfully created team!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Could not add team. A team with the same people already exists!");
+  }
+});
 
 app.listen(3000, () => console.log(`App running on port 3000.`));
   
