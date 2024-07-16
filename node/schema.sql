@@ -1,10 +1,10 @@
 
 CREATE TABLE users (
   id serial PRIMARY KEY,
+  name VARCHAR (255) UNIQUE NOT NULL,
   won_games_total INTEGER, -- cache or query?
   won_single_games INTEGER,
-  won_double_games INTEGER,
-  name VARCHAR (255) UNIQUE NOT NULL
+  won_double_games INTEGER
 );
 
 CREATE TABLE teams (
@@ -22,7 +22,6 @@ CREATE TABLE games (
   red_goals INTEGER,
   blue_to_red_delta INTEGER
 );
-
 
 -- TODO: Constraint syntax
 -- CONSTRAINT fk_blue_team

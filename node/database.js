@@ -47,10 +47,4 @@ const createTables = async () => {
 
 createTables();
 
-// TODO: Constraint syntax
-// CONSTRAINT fk_blue_team
-// FOREIGN KEY(blue_team) 
-//   REFERENCES teams(id)
-//     ON DELETE SET NULL
-
   

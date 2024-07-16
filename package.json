@@ -6,9 +6,14 @@
     "start": "docker-compose up --watch",
     "clean": "docker-compose down -v --rmi all",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "cd node && npm install && cd .. && cd react && npm install && cd .." 
+    "postinstall": "cd node && npm install && cd .. && cd react && npm install && cd .."
   },
   "author": "Robert Renbris",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.16.1"
+  }
 }
