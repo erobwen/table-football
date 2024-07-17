@@ -3,8 +3,9 @@ CREATE TABLE users (
   id serial PRIMARY KEY,
   name VARCHAR (255) UNIQUE NOT NULL,
   won_games_total INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
-  won_games_alone INTEGER DEFAULT 0,
-  won_games_in_team INTEGER DEFAULT 0
+  played_games_total INTEGER DEFAULT 0,
+  won_games_single INTEGER DEFAULT 0,
+  played_games_single INTEGER DEFAULT 0 
 );
 
 CREATE TABLE teams (
@@ -17,11 +18,11 @@ CREATE TABLE teams (
 
 CREATE TABLE games (
   id serial PRIMARY KEY, 
-  is_ongoing BOOLEAN,
-  blue_team INTEGER REFERENCES teams,
-  red_team INTEGER REFERENCES teams,
-  blue_goals INTEGER,
-  red_goals INTEGER,
+  finished BOOLEAN,
+  team1 INTEGER REFERENCES teams,
+  team2 INTEGER REFERENCES teams,
+  team1_score INTEGER,
+  team2_score INTEGER,
   blue_to_red_delta INTEGER
 );
 

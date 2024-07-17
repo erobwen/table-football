@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Modal, Paper, TextField } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { useLoadedData } from '../../components/hooks';
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
 import { CreateUserModal } from "./CreateUserModal";
@@ -23,6 +23,8 @@ export function Dashboard() {
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
   const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); reload(); });
  
+//style={{height:"300px"}}
+
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -30,7 +32,7 @@ export function Dashboard() {
           <Grid item xs={12}>
             <Paper><h2 style={{height:"100px", lineHeight:"100px"}}>Table Football Hall of Fame</h2></Paper>
           </Grid>
-          <Grid item xs={8} style={{height:"300px"}}>
+          <Grid item xs={8}>
             <HallOfFame users={users}/>
           </Grid>
           <Grid item xs={4}>
@@ -46,7 +48,7 @@ export function Dashboard() {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <Paper>Bottom information</Paper>
+            <Paper>Created by Robert Renbris</Paper>
           </Grid>
         </Grid>
       </Box>
@@ -69,22 +71,40 @@ function HallOfFame({users}) {
     }
   ];
   
+  if (!rows) return null;
+
   return (
     <>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+      <Paper style={{padding: "10px"}}>      
+        <Grid key="grid" container spacing={2}>
+          { rows.map(player => {
+            return (
+              <Fragment key={player.id}>
+                <Grid item xs={4}>
+                  {player.name}
+                </Grid>
+                <Grid item xs={8}>
+                  Statistics...
+                </Grid>
+              </Fragment>
+            );
+          })}  
+        </Grid>
+        {/* <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-      />
+          }}
+          pageSizeOptions={[5]}
+          checkboxSelection
+          disableRowSelectionOnClick
+        /> */}
+      </Paper>
     </>
   )
 }

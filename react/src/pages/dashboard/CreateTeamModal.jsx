@@ -10,7 +10,6 @@ export const CreateTeamModal = ({open, onClose}) => {
   const [users, _] = useLoadedData(getUsers);
   const [items, setItems] = useState();
   useEffect(() => {
-    console.log(users);
     if (!users) return;
     const items = users.map(user => {
       return (
@@ -62,7 +61,6 @@ export const CreateTeamModal = ({open, onClose}) => {
               <Select
                 labelId="player-1"
                 value={player1}
-                label="Player1"
                 onChange={onSelectPlayer1}
               >
                 {items}
@@ -74,7 +72,6 @@ export const CreateTeamModal = ({open, onClose}) => {
               <Select
                 labelId="player-2"
                 value={player2}
-                label="Player2"
                 onChange={onSelectPlayer2}
               >
                 {items}
