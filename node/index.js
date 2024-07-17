@@ -33,7 +33,7 @@ app.post('/api/users', async (req, res) => {
     addUser(req.body.name);
     res.status(200).send("Successfully added user.");
   } catch (error) {
-    res.status(500).send("Could not add player, player already exists!");
+    res.status(400).send("Could not add player, player already exists!");
   } 
 });
 
@@ -52,8 +52,10 @@ app.get('/api/teams', async (req, res) => {
 
 app.post('/api/teams', async (req, res) => {
   let {name, player1Id, player2Id} = req.body;
+  if (player1Id === "") player1Id = null;
+  if (player2Id === "") player2Id = null;
   if (player1Id === player2Id) {
-    res.status(500).send("Players needs to be different in a team.");
+    res.status(400).send("Players needs to be different in a team.");
   }
 
   try {
@@ -61,7 +63,7 @@ app.post('/api/teams', async (req, res) => {
     res.status(200).send("Successfully created team!");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Could not add team. A team with the same people already exists!");
+    res.status(400).send("Could not add team. A team with the same people already exists!");
   }
 });
 

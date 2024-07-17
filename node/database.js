@@ -28,13 +28,9 @@ const createTables = async () => {
     await client.query(schema);
 
     // Some dummy data for convenient development.  
-    await client.query(`
-      INSERT INTO users (name) 
-      VALUES 
-        ('User1'),
-        ('User2'),
-        ('User3');
-    `);
+    await addUser("User1");
+    await addUser("User2");
+    await addUser("User3");
 
     // Mark done
     await client.query(`
@@ -88,9 +84,9 @@ export async function addTeam(name, player1Id, player2Id) {
   const teamKey = uniqueTeamKey(player1Id, player2Id);
 
   if (!name) {
-    const player1 = getUser(player1Id);
-    const player2 = getUser(player2Id);
-    name = `Team ${player1.name} and ${player1.name}`
+    const player1 = await getUser(player1Id);
+    const player2 = await getUser(player2Id);
+    name = `${player1.name} & ${player2.name}`
   }
 
   await client.query(`INSERT INTO teams(team_key, name, player1_id, player2_id) VALUES ('${teamKey}', '${name}', ${player1Id}, ${player2Id});`); 

@@ -5,9 +5,11 @@ import { useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
 import { CreateUserModal } from "./CreateUserModal";
+import { ButtonColumn } from "../../components/Widgets";
+import { getUsers } from "../../components/Client";
 
 export function Dashboard() {
-  const [users, reload] = useLoadedData("/api/users");
+  const [users, reload] = useLoadedData(getUsers);
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
@@ -33,12 +35,14 @@ export function Dashboard() {
           </Grid>
           <Grid item xs={4}>
             <Paper>
-              <Button onClick={onCreateUser} variant="contained">New Player</Button>
-              <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
-              <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
-              <Button href="/game" variant="contained">
-                Start Game!
-              </Button>
+              <ButtonColumn>
+                <Button onClick={onCreateUser} variant="contained">New Player</Button>
+                <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
+                <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
+                <Button href="/game" variant="contained">
+                  Start Game!
+                </Button>
+              </ButtonColumn>
             </Paper>
           </Grid>
           <Grid item xs={12}>

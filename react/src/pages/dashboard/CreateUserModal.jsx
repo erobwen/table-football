@@ -3,6 +3,7 @@ import { Modal, Paper, TextField } from "@mui/material";
 import { ModalContent } from "../../components/ModalContent";
 import { postUser } from "../../components/Client";
 import { useCallback, useState } from "react";
+import { InfoModal } from "../../components/Widgets";
 
 export const CreateUserModal = ({open, onClose}) => {
 
@@ -36,8 +37,7 @@ export const CreateUserModal = ({open, onClose}) => {
       {/* Request */}
       <Modal open={open} onClose={onClose}>
         <div>
-
-          <ModalContent header={"New Player"} onOk={() => {onSendToBackend()}}>
+          <ModalContent header={"New Player"} onOk={() => {onSendToBackend()}} okEnabled={name.length > 3}>
             <TextField 
               label="Name"
               type="text"
@@ -55,15 +55,3 @@ export const CreateUserModal = ({open, onClose}) => {
   )
 }
 
-
-export const InfoModal = ({message, onClose}) => (
-  <div>
-    <Modal open={!!message} onClose={onClose}>
-      <div>
-        <ModalContent response header={"Information"} onOk={onClose}>
-          <div>{ message ? message : "" }</div>
-        </ModalContent>
-      </div>
-    </Modal>
-  </div>
-)

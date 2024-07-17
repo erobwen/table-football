@@ -1,19 +1,13 @@
 import { useEffect, useState } from 'react'
-import axios from "axios";
 
-export function useLoadedData(path) {
+export function useLoadedData(loader) {
   const [data, setData] = useState(null);
   useEffect(() => {
     reload();
   }, []);
 
-  function reload() {
-    axios
-      .get("http://localhost:3000" + path)
-      .then((response) => setData(response.data))
-      .catch((err) => {
-      console.error(err);
-    });
+  async function reload() {
+    setData(await loader())
   }
 
   return [data, reload]
