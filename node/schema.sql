@@ -19,10 +19,10 @@ CREATE TABLE teams (
 CREATE TABLE games (
   id serial PRIMARY KEY, 
   finished BOOLEAN,
-  team1 INTEGER REFERENCES teams,
-  team2 INTEGER REFERENCES teams,
-  team1_score INTEGER,
-  team2_score INTEGER,
+  "team1Id" INTEGER REFERENCES teams,
+  "team2Id" INTEGER REFERENCES teams,
+  "team1Score" INTEGER,
+  "team2Score" INTEGER,
   blue_to_red_delta INTEGER
 );
 

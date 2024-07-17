@@ -7,7 +7,7 @@ import { InfoModal } from "../../components/Widgets";
 
 
 export const CreateTeamModal = ({open, onClose}) => {
-  const [users, _] = useLoadedData(getUsers);
+  const [users] = useLoadedData(getUsers);
   const [items, setItems] = useState();
   useEffect(() => {
     if (!users) return;

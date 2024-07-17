@@ -1,17 +1,18 @@
 import { Box, FormControl, InputLabel, MenuItem, Modal, Paper, Select } from "@mui/material";
 import { ModalContent } from "../../components/ModalContent";
 import { useLoadedData } from "../../components/hooks";
-import { getTeams, postFinishedGame, postTeam } from "../../components/Client";
+import { getOngoingGame, getTeams, postStartedGame } from "../../components/Client";
 import { useEffect, useState } from "react";
 import { InfoModal } from "../../components/Widgets";
-import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
+import { useNavigate } from "react-router-dom";
 
 
-export const RegisterGameModal = ({open, onClose}) => {
+export const StartGameModal = ({open, onClose}) => {
   const [teams] = useLoadedData(getTeams);
+  const [ongoingGame] = useLoadedData(getOngoingGame);
+
   const [items, setItems] = useState();
   useEffect(() => {
-    console.log(teams);
     if (!teams) return;
     const items = teams.map(team => {
       return (
@@ -22,11 +23,17 @@ export const RegisterGameModal = ({open, onClose}) => {
     setItems(items);
   }, [teams]) 
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (ongoingGame) {
+      // Game already started! We are out of here! 
+      navigate("/game");
+    }
+  }, [ongoingGame])
+
   const [team1Id, setTeam1Id] = useState("");
   const [team2Id, setTeam2Id] = useState("");
-  
-  const [team1Score, setTeam1Score] = useState(0);
-  const [team2Score, setTeam2Score] = useState(0);
 
   const [responseMessage, setResponseMessage] = useState(null);
   const [finished, setFinished] = useState(false);
@@ -45,8 +52,8 @@ export const RegisterGameModal = ({open, onClose}) => {
 
   async function onSendToBackend() {
     try {
-      setResponseMessage(await postFinishedGame(emptyToNull(team1Id), emptyToNull(team2Id), team1Score, team2Score));
-      setFinished(true);
+      await postStartedGame(emptyToNull(team1Id), emptyToNull(team2Id));
+      navigate("/game");
     } catch (error) {
       setResponseMessage(error.message);
     }
@@ -64,7 +71,7 @@ export const RegisterGameModal = ({open, onClose}) => {
     <>
       <Modal open={open} onClose={onClose}>
         <Box>
-          <ModalContent header={"Register Team"} onOk={onSendToBackend} okEnabled={team1Id && team2Id}>
+          <ModalContent header={"Choose teams!"} onOk={onSendToBackend} okEnabled={team1Id && team2Id}>
             <FormControl fullWidth>
               <InputLabel id="player-1">Team 1</InputLabel>
               <Select
@@ -87,23 +94,6 @@ export const RegisterGameModal = ({open, onClose}) => {
                 {items}
               </Select>
             </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel id="team-1-score">Team 1 Score</InputLabel>
-              <NumberInput
-                value={team1Score}
-                onChange={(event, val) => setTeam1Score(val)}
-              />
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel id="team-2-score">Team 2 Score</InputLabel>
-              <NumberInput
-                value={team2Score}
-                onChange={(event, val) => setTeam2Score(val)}
-              />
-            </FormControl>
-
           </ModalContent>
         </Box>
       </Modal>

@@ -7,24 +7,26 @@ import { RegisterGameModal } from "./RegisterGameModal";
 import { CreateUserModal } from "./CreateUserModal";
 import { ButtonColumn } from "../../components/Widgets";
 import { getUsers } from "../../components/Client";
+import { StartGameModal } from "./StartGameModal";
 
 export function Dashboard() {
-  const [users, reload] = useLoadedData(getUsers);
+  const [users, _, reload] = useLoadedData(getUsers);
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [registerGameOpen, setRegisterGameOpen] = useState(false);
+  const [startGameOpen, setStartGameOpen] = useState(false);
 
   const onCreateUser = useCallback(() => setCreateUserOpen(true));
   const onCreateTeam = useCallback(() => setCreateTeamOpen(true));
   const onRegisterGame = useCallback(() => setRegisterGameOpen(true));
+  const onStartGame = useCallback(() => setStartGameOpen(true));
 
   const onCloseCreateUser = useCallback(() => { setCreateUserOpen(false); reload(); });
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
-  const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); reload(); });
+  const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); });
+  const onCloseStartGame = useCallback(() => { setStartGameOpen(false); });
  
-//style={{height:"300px"}}
-
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -41,9 +43,7 @@ export function Dashboard() {
                 <Button onClick={onCreateUser} variant="contained">New Player</Button>
                 <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
                 <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
-                <Button href="/game" variant="contained">
-                  Start Game!
-                </Button>
+                <Button onClick={onStartGame} variant="contained">Start Game!</Button>
               </ButtonColumn>
             </Paper>
           </Grid>
@@ -55,6 +55,7 @@ export function Dashboard() {
       {createUserOpen && <CreateUserModal open={createUserOpen} onClose={onCloseCreateUser}/>}
       {createTeamOpen && <CreateTeamModal open={createTeamOpen} onClose={onCloseCreateTeam}/>}
       {registerGameOpen && <RegisterGameModal open={registerGameOpen} onClose={onCloseRegisterGame}/>}
+      {startGameOpen && <StartGameModal open={startGameOpen} onClose={onCloseStartGame}/>}
     </>
   )
 }

@@ -126,7 +126,7 @@ export async function addGame(finished, team1Id, team2Id, team1Score, team2Score
     }
 
     // Add game
-    const response = await client.query(`INSERT INTO games(finished, team1, team2, team1_score, team2_score) VALUES(${finished}, ${team1Id}, ${team2Id}, ${team1Score}, ${team2Score}) RETURNING *;`);
+    const response = await client.query(`INSERT INTO games(finished, "team1Id", "team2Id", "team1Score", "team2Score") VALUES(${finished}, ${team1Id}, ${team2Id}, ${team1Score}, ${team2Score}) RETURNING *;`);
     await client.query('COMMIT')
     return response.rows[0]; 
   } catch (error) {
@@ -137,8 +137,51 @@ export async function addGame(finished, team1Id, team2Id, team1Score, team2Score
 
 
 /**
+ * Ongoing game
+ */
+
+export async function getOngoingGame() {
+  return (await client.query(`SELECT * FROM games WHERE games.finished=false;`)).rows[0];
+}
+
+export async function updateOngoingGame(game) {
+  const existing = await getOngoingGame();
+  if (existing.finished) throw new Error("Cannot update finished game!");
+  if (existing.id !== game.id) throw new Error("Wrong id at game update?");
+
+  const response = await client.query(`UPDATE games SET "team1Score" = ${game.team1Score}, "team2Score" = ${game.team2Score} WHERE id = ${game.id};`);
+  return response.data;
+}
+
+export async function finishOngoingGame(game) {
+  const existing = await getOngoingGame();
+  if (existing.id !== game.id) throw new Error("Wrong id at game update?");
+
+  try {
+    await client.query('BEGIN')
+    await client.query(`UPDATE games SET finished = true WHERE id = ${game.id};`);
+    updateStatistics(game.team1Id, game.team2Id, game.team1Score, game.team2Score);
+    await client.query('COMMIT')
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error; 
+  } 
+}
+
+
+/**
  * Statistics 
  */
+
+export async function updateStatistics(team1Id, team2Id, team1Score, team2Score) {
+  await incrementPlayedStatistics(team1Id);
+  await incrementPlayedStatistics(team2Id);
+  if (team1Score > team2Score) {
+    await incrementWinStatistics(team1Id);
+  } else if (team1Score > team2Score) {
+    await incrementWinStatistics(team2Id);
+  }
+}
 
 export async function incrementPlayedStatistics(teamId) {
   const [player1Id, player2Id] = await getPlayerIds(teamId);
@@ -157,15 +200,5 @@ export async function incrementWinStatistics(teamId) {
     await client.query(`UPDATE users SET won_games_total = won_games_total + 1 WHERE users.id=${player2Id};`)
   } else {
     await client.query(`UPDATE users SET won_games_single = won_games_single + 1 WHERE users.id=${player1Id};`)
-  }
-}
-
-export async function updateStatistics(team1Id, team2Id, team1Score, team2Score) {
-  await incrementPlayedStatistics(team1Id);
-  await incrementPlayedStatistics(team2Id);
-  if (team1Score > team2Score) {
-    await incrementWinStatistics(team1Id);
-  } else if (team1Score > team2Score) {
-    await incrementWinStatistics(team2Id);
   }
 }

@@ -1,4 +1,4 @@
-import { addGame, addTeam, addUser, getAllTeams, getAllUsers } from './database.js'; 
+import { addGame, addTeam, addUser, finishOngoingGame, getAllTeams, getAllUsers, getOngoingGame, getTeam, updateOngoingGame } from './database.js'; 
 
 import express from 'express';
 
@@ -49,12 +49,20 @@ app.get('/api/teams', async (req, res) => {
   } 
 });
 
+app.get('/api/teams/:id', async (req, res) => {
+  try {
+    res.status(200).send(await getTeam(req.params.id));
+  } catch (error) {
+    res.status(500).send(error);
+  } 
+});
+
 app.post('/api/teams', async (req, res) => {
   let {name, player1Id, player2Id} = req.body;
   if (player1Id === "") player1Id = null;
   if (player2Id === "") player2Id = null;
   if (player1Id === player2Id) {
-    res.status(400).send("Players needs to be different in a team.");
+    return res.status(400).send("Players needs to be different in a team.");
   }
 
   try {
@@ -72,17 +80,49 @@ app.post('/api/teams', async (req, res) => {
  */
 
 app.post('/api/games', async (req, res) => {
-  let {finished, team1Id, team2Id, team1Score, team2Score} = req.body;
+  let {finished, team1Id, team2Id, team1Score=0, team2Score=0} = req.body;
   if (team1Id === team2Id) {
-    res.status(400).send("A team cannot play against itself!");
+    return res.status(400).send("A team cannot play against itself!");
   }
   if (team1Score < 0 || team2Score < 0) {
-    res.status(400).send("Negative score not possible!");
+    return res.status(400).send("Negative score not possible!");
   }
 
   try {
     await addGame(finished, team1Id, team2Id, team1Score, team2Score); 
     res.status(200).send("Successfully registered game!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+});
+
+
+/**
+ * Ongoing game
+ */
+
+app.get('/api/ongoing-game', async (req, res) => {
+  try {
+    const game = await getOngoingGame(); 
+    res.status(200).send(game);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+});
+
+
+// Note: Use this endpoint to finish as well, by sending game.finished = true;
+app.put('/api/ongoing-game', async (req, res) => {
+  let game = req.body;
+  try {
+    if (game.finished) {
+      await finishOngoingGame(game);
+    } else {
+      await updateOngoingGame(game); 
+    }
+    res.status(200).send("Updated game status!");
   } catch (error) {
     console.log(error);
     res.status(500).send(error.message);
