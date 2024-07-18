@@ -1,6 +1,26 @@
 import { addGame, addTeam, addUser, finishOngoingGame, getAllTeams, getAllUsers, getOngoingGame, getTeam, updateOngoingGame } from './database.js'; 
 
 import express from 'express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
+// Extended: https://swagger.io/specification/#infoObject
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      version: "1.0.0",
+      title: "Table Football",
+      description: "Statistics",
+      contact: {
+        name: "Robert Renbris"
+      },
+      servers: ["http://localhost:3000"]
+    }
+  },
+  // ['.routes/*.js']
+  apis: ["index.js"]
+};
+
 
 const app = express();
 app.use(express.json());
@@ -14,11 +34,25 @@ app.use(function (req, res, next) {
   next()
 })
 
+// Swagger auto-generate
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+
 
 /**
  * Users
  */
 
+/**
+ * @swagger
+ * /users:
+ *    get:
+ *      description: Use to return all customers
+ *    responses:
+ *      '200':
+ *        description: All users
+ */
 app.get('/api/users', async (req, res) => {
   try {
     res.status(200).send(await getAllUsers());
