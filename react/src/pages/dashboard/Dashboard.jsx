@@ -3,7 +3,7 @@ import { useLoadedData } from '../../components/hooks';
 import { Fragment, useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
-import { CreateUserModal } from "./CreateUserModal";
+import { CreatePlayerModal } from "./CreatePlayerModal";
 import { ButtonColumn } from "../../components/Widgets";
 import { getTeams } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
@@ -11,17 +11,17 @@ import { StartGameModal } from "./StartGameModal";
 export function Dashboard() {
   const [teams, _, reload] = useLoadedData(getTeams);
 
-  const [createUserOpen, setCreateUserOpen] = useState(false);
+  const [createPlayerOpen, setCreatePlayerOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [registerGameOpen, setRegisterGameOpen] = useState(false);
   const [startGameOpen, setStartGameOpen] = useState(false);
 
-  const onCreateUser = useCallback(() => setCreateUserOpen(true));
+  const onCreatePlayer = useCallback(() => setCreatePlayerOpen(true));
   const onCreateTeam = useCallback(() => setCreateTeamOpen(true));
   const onRegisterGame = useCallback(() => setRegisterGameOpen(true));
   const onStartGame = useCallback(() => setStartGameOpen(true));
 
-  const onCloseCreateUser = useCallback(() => { setCreateUserOpen(false); reload(); });
+  const onCloseCreatePlayer = useCallback(() => { setCreatePlayerOpen(false); reload(); });
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
   const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); });
   const onCloseStartGame = useCallback(() => { setStartGameOpen(false); });
@@ -39,7 +39,7 @@ export function Dashboard() {
           <Grid item xs={4}>
             <Paper>
               <ButtonColumn>
-                <Button onClick={onCreateUser} variant="contained">New Player</Button>
+                <Button onClick={onCreatePlayer} variant="contained">New Player</Button>
                 <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
                 <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
                 <Button onClick={onStartGame} variant="contained">Start Game!</Button>
@@ -51,7 +51,7 @@ export function Dashboard() {
           </Grid>
         </Grid>
       </Box>
-      {createUserOpen && <CreateUserModal open={createUserOpen} onClose={onCloseCreateUser}/>}
+      {createPlayerOpen && <CreatePlayerModal open={createPlayerOpen} onClose={onCloseCreatePlayer}/>}
       {createTeamOpen && <CreateTeamModal open={createTeamOpen} onClose={onCloseCreateTeam}/>}
       {registerGameOpen && <RegisterGameModal open={registerGameOpen} onClose={onCloseRegisterGame}/>}
       {startGameOpen && <StartGameModal open={startGameOpen} onClose={onCloseStartGame}/>}

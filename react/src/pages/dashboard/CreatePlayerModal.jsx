@@ -1,11 +1,11 @@
 
 import { Modal, Paper, TextField } from "@mui/material";
 import { ModalContent } from "../../components/ModalContent";
-import { postUser } from "../../components/Client";
+import { postPlayer } from "../../components/Client";
 import { useCallback, useState } from "react";
 import { InfoModal } from "../../components/Widgets";
 
-export const CreateUserModal = ({open, onClose}) => {
+export const CreatePlayerModal = ({open, onClose}) => {
 
   const [name, setName] = useState("");
   const [responseMessage, setResponseMessage] = useState(null);
@@ -13,8 +13,10 @@ export const CreateUserModal = ({open, onClose}) => {
 
   async function onSendToBackend() {
     try {
-      setResponseMessage(await postUser(name));
-      setFinished(true);
+      await postPlayer(name);
+      onClose();
+      // setResponseMessage(await postPlayer(name));
+      // setFinished(true);
     } catch (error) {
       setResponseMessage(error.message);
     }

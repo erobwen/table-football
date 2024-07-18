@@ -1,4 +1,4 @@
-import { addGame, addTeam, addUser, finishOngoingGame, getAllTeams, getAllUsers, getOngoingGame, getTeam, updateOngoingGame } from './database.js'; 
+import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlayers, getOngoingGame, getTeam, updateOngoingGame } from './database.js'; 
 
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -41,30 +41,30 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 /**
- * Users
+ * Players
  */
 
 /**
  * @swagger
- * /users:
+ * /players:
  *    get:
  *      description: Use to return all customers
  *    responses:
  *      '200':
- *        description: All users
+ *        description: All players
  */
-app.get('/api/users', async (req, res) => {
+app.get('/api/players', async (req, res) => {
   try {
-    res.status(200).send(await getAllUsers());
+    res.status(200).send(await getAllPlayers());
   } catch (error) {
     res.status(500).send(error);
   } 
 });
 
-app.post('/api/users', async (req, res) => {
+app.post('/api/players', async (req, res) => {
   try {
-    addUser(req.body.name);
-    res.status(200).send("Successfully added user.");
+    addPlayer(req.body.name);
+    res.status(200).send("Successfully added player.");
   } catch (error) {
     res.status(400).send("Could not add player, player already exists!");
   } 

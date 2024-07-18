@@ -28,9 +28,9 @@ const createTables = async () => {
     await client.query(schema);
 
     // Some dummy data for convenient development.  
-    await addUser("Player A");
-    await addUser("Player B");
-    await addUser("Player C");
+    await addPlayer("Player A");
+    await addPlayer("Player B");
+    await addPlayer("Player C");
 
     // Mark done
     await client.query(`
@@ -45,22 +45,22 @@ createTables();
 
 
 /**
- * Users 
+ * Players 
  */
 
-export async function getAllUsers() {
-  const result = await client.query(`SELECT * FROM users;`);
+export async function getAllPlayers() {
+  const result = await client.query(`SELECT * FROM players;`);
   return (result).rows;
 }
 
-export async function getUser(id) {
-  return (await client.query(`SELECT * FROM users WHERE users.id=${id};`)).rows[0];
+export async function getPlayer(id) {
+  return (await client.query(`SELECT * FROM players WHERE players.id=${id};`)).rows[0];
 } 
 
-export async function addUser(name) {
+export async function addPlayer(name) {
   try {
     await client.query('BEGIN')
-    const response = await client.query(`INSERT INTO users(name) VALUES('${name}') RETURNING id;`);
+    const response = await client.query(`INSERT INTO players(name) VALUES('${name}') RETURNING id;`);
 
     // Auto create a team as well for the player.
     const id = response.rows[0].id; 
@@ -97,8 +97,8 @@ export async function addTeam(name, player1Id, player2Id) {
   const teamKey = uniqueTeamKey(player1Id, player2Id);
 
   if (!name) {
-    const player1 = await getUser(player1Id);
-    const player2 = await getUser(player2Id);
+    const player1 = await getPlayer(player1Id);
+    const player2 = await getPlayer(player2Id);
     name = `${player1.name} & ${player2.name}`
   }
 

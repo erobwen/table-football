@@ -1,5 +1,5 @@
 
-CREATE TABLE users (
+CREATE TABLE players (
   id serial PRIMARY KEY,
   name VARCHAR (255) UNIQUE NOT NULL
 );
@@ -8,8 +8,8 @@ CREATE TABLE teams (
   id serial PRIMARY KEY,
   "teamKey" VARCHAR UNIQUE NOT NULL,
   name VARCHAR (255) UNIQUE NOT NULL,
-  "player1Id" INTEGER REFERENCES users,
-  "player2Id" INTEGER REFERENCES users,
+  "player1Id" INTEGER REFERENCES players,
+  "player2Id" INTEGER REFERENCES players,
   "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
   "playedGamesTotal" INTEGER DEFAULT 0,
   "goalsAgainst" INTEGER DEFAULT 0,

@@ -1,24 +1,24 @@
 import { Box, FormControl, InputLabel, MenuItem, Modal, Paper, Select } from "@mui/material";
 import { ModalContent } from "../../components/ModalContent";
 import { useLoadedData } from "../../components/hooks";
-import { getUsers, postTeam } from "../../components/Client";
+import { getPlayers, postTeam } from "../../components/Client";
 import { useEffect, useState } from "react";
 import { InfoModal } from "../../components/Widgets";
 
 
 export const CreateTeamModal = ({open, onClose}) => {
-  const [users] = useLoadedData(getUsers);
+  const [players] = useLoadedData(getPlayers);
   const [items, setItems] = useState();
   useEffect(() => {
-    if (!users) return;
-    const items = users.map(user => {
+    if (!players) return;
+    const items = players.map(player => {
       return (
-        <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
+        <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>
       )
     });
     items.push(<MenuItem key={0} value={null}></MenuItem>)
     setItems(items);
-  }, [users]) 
+  }, [players]) 
 
   const [player1, setPlayer1] = useState("");
   const [player2, setPlayer2] = useState("");
@@ -36,8 +36,10 @@ export const CreateTeamModal = ({open, onClose}) => {
 
   async function onSendToBackend() {
     try {
-      setResponseMessage(await postTeam(null, player1, player2));
-      setFinished(true);
+      await postTeam(null, player1, player2);
+      onClose();
+      // setResponseMessage(await postTeam(null, player1, player2));
+      // setFinished(true);
     } catch (error) {
       setResponseMessage(error.message);
     }

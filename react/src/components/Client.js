@@ -2,17 +2,17 @@ import axios from "axios";
 
 let base = "http://localhost:3000"
 
-export async function getUsers() {
+export async function getPlayers() {
   try {
-    return (await axios.get(base + "/api/users")).data; 
+    return (await axios.get(base + "/api/players")).data; 
   } catch(error) {
     throw new Error(error.response.data);
   }
 }
 
-export async function postUser(name) {
+export async function postPlayer(name) {
   try {
-    const result = await axios.post(base + "/api/users", {name}); 
+    const result = await axios.post(base + "/api/players", {name}); 
     return result.data; 
   } catch(error) {
     throw new Error(error.response.data);
