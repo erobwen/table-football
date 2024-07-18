@@ -32,7 +32,7 @@ export function Dashboard() {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Paper><h2 style={{height:"100px", lineHeight:"100px"}}>Table Football Hall of Fame</h2></Paper>
+            <Paper><h3 style={{height:"100px", lineHeight:"100px"}}>Table Football Tracker 1.0</h3></Paper>
           </Grid>
           <Grid item xs={8}>
             <HallOfFame users={users}/>

@@ -2,18 +2,20 @@
 CREATE TABLE users (
   id serial PRIMARY KEY,
   name VARCHAR (255) UNIQUE NOT NULL,
-  won_games_total INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
-  played_games_total INTEGER DEFAULT 0,
-  won_games_single INTEGER DEFAULT 0,
-  played_games_single INTEGER DEFAULT 0 
+  "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
+  "playedGamesTotal" INTEGER DEFAULT 0,
+  "wonGamesSingle" INTEGER DEFAULT 0,
+  "playedGamesSingle" INTEGER DEFAULT 0 
 );
 
 CREATE TABLE teams (
   id serial PRIMARY KEY,
-  team_key VARCHAR UNIQUE NOT NULL,
+  "teamKey" VARCHAR UNIQUE NOT NULL,
   name VARCHAR (255) UNIQUE NOT NULL,
-  player1_id INTEGER REFERENCES users,
-  player2_id INTEGER REFERENCES users
+  "player1Id" INTEGER REFERENCES users,
+  "player2Id" INTEGER REFERENCES users,
+  "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
+  "playedGamesTotal" INTEGER DEFAULT 0
 );
 
 CREATE TABLE games (
@@ -22,7 +24,7 @@ CREATE TABLE games (
   "team1Id" INTEGER REFERENCES teams,
   "team2Id" INTEGER REFERENCES teams,
   "team1Score" INTEGER,
-  "team2Score" INTEGER,
+  "team2Score" INTEGER
 );
 
 -- TODO: Constraint syntax
