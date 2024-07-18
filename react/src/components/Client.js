@@ -27,6 +27,14 @@ export async function getTeams() {
   }
 }
 
+export async function getTeamsSorted() {
+  try {
+    return (await axios.get(base + "/api/teams/sorted")).data; 
+  } catch(error) {
+    throw new Error(error.response.data);
+  }
+}
+
 export async function getTeam(id) {
   try {
     return (await axios.get(base + `/api/teams/${id}`)).data; 

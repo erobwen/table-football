@@ -3,11 +3,18 @@ import { ModalContent } from "./ModalContent"
 
 
 const columnStyle = {display: "flex", gap: "5px", flexDirection: "column", alignItems: "stretch", alignContent: "flex-start"}
+const rowStyle = {display: "flex", gap: "5px", flexDirection: "row", alignItems: "stretch", alignContent: "flex-start"}
 
 
 export const ButtonColumn = ({children}) => {
   return <Box style={columnStyle} children={children}/>
 } 
+
+
+export const ButtonRow = ({children}) => {
+  return <Box style={rowStyle} children={children}/>
+} 
+
 
 export const InfoModal = ({message, onClose}) => (
   <div>

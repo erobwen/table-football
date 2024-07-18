@@ -18,7 +18,7 @@ const swaggerOptions = {
     }
   },
   // ['.routes/*.js']
-  apis: ["index.js"]
+  apis: ["api.js"]
 };
 
 
@@ -39,19 +39,16 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
-
-/**
- * Players
- */
-
 /**
  * @swagger
- * /players:
+ * /api/players:
  *    get:
- *      description: Use to return all customers
+ *      description: List all players
  *    responses:
  *      '200':
  *        description: All players
+ *      '500':
+ *        description: Server error
  */
 app.get('/api/players', async (req, res) => {
   try {
@@ -61,9 +58,21 @@ app.get('/api/players', async (req, res) => {
   } 
 });
 
+
+/**
+ * @swagger
+ * /api/players:
+ *    post:
+ *      description: Add player
+ *    responses:
+ *      '200':
+ *        description: Player added
+ *      '400':
+ *        description: Player already exists
+ */
 app.post('/api/players', async (req, res) => {
   try {
-    addPlayer(req.body.name);
+    await addPlayer(req.body.name);
     res.status(200).send("Successfully added player.");
   } catch (error) {
     res.status(400).send("Could not add player, player already exists!");
@@ -72,12 +81,58 @@ app.post('/api/players', async (req, res) => {
 
 
 /**
- * Teams
+ * @swagger
+ * /api/teams:
+ *    post:
+ *      description: List all teams.
+ *    responses:
+ *      '200':
+ *        description: List all teams.
+ *      '500':
+ *        description: Server error.
  */
-
 app.get('/api/teams', async (req, res) => {
   try {
     res.status(200).send(await getAllTeams());
+  } catch (error) {
+    res.status(500).send(error);
+  } 
+});
+
+
+/**
+ * @swagger
+ * /api/teams:
+ *    post:
+ *      description: List all teams, augmented with information and sorted.
+ *    responses:
+ *      '200':
+ *        description: List all teams
+ *      '500':
+ *        description: Server errlr
+ */
+app.get('/api/teams/sorted', async (req, res) => {
+  try {
+    const teams = await getAllTeams();
+    for (let team of teams) {
+      team.winRatio = team.playedGamesTotal > 0 ? (team.wonGamesTotal + 0.0) / team.playedGamesTotal : "N/A";
+      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal;
+      team.goalsDifference = team.goalsFor - team.goalsAgainst;
+    }
+    teams.sort((t1, t2) => {
+      t1 = t1.winRatio;
+      t2 = t2.winRatio;
+      if (typeof(t1) === "number" && typeof(t2) === "number") {
+        return t2 - t1;
+      } else if (t1 === "N/A" && t2 === "N/A") {
+        return 0;
+      } else if (t1 === "N/A") {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+    res.status(200).send(teams);
   } catch (error) {
     res.status(500).send(error);
   } 

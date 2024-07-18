@@ -4,12 +4,13 @@ import { Fragment, useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
 import { CreatePlayerModal } from "./CreatePlayerModal";
-import { ButtonColumn } from "../../components/Widgets";
-import { getTeams } from "../../components/Client";
+import { ButtonColumn, ButtonRow } from "../../components/Widgets";
+import { getTeams, getTeamsSorted } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
+import { DataGrid } from "@mui/x-data-grid";
 
 export function Dashboard() {
-  const [teams, _, reload] = useLoadedData(getTeams);
+  const [teams, _, reload] = useLoadedData(getTeamsSorted);
 
   const [createPlayerOpen, setCreatePlayerOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
@@ -23,7 +24,7 @@ export function Dashboard() {
 
   const onCloseCreatePlayer = useCallback(() => { setCreatePlayerOpen(false); reload(); });
   const onCloseCreateTeam = useCallback(() => { setCreateTeamOpen(false); reload(); });
-  const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); });
+  const onCloseRegisterGame = useCallback(() => { setRegisterGameOpen(false); reload(); });
   const onCloseStartGame = useCallback(() => { setStartGameOpen(false); });
  
   return (
@@ -33,21 +34,23 @@ export function Dashboard() {
           <Grid item xs={12}>
             <Paper><h3 style={{height:"100px", lineHeight:"100px"}}>Table Football Tracker 1.0</h3></Paper>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             <HallOfFame teams={teams}/>
           </Grid>
-          <Grid item xs={4}>
-            <Paper>
-              <ButtonColumn>
+          <Grid item xs={12}>
+            <Paper style={{padding: "20px"}}>
+              <ButtonRow>
                 <Button onClick={onCreatePlayer} variant="contained">New Player</Button>
                 <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
                 <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
-                <Button onClick={onStartGame} variant="contained">Start Game!</Button>
-              </ButtonColumn>
+                <Button onClick={onStartGame} variant="contained" style={{backgroundColor: "red"}}>Start Game!</Button>
+              </ButtonRow>
             </Paper>
-          </Grid>
+          </Grid>          
           <Grid item xs={12}>
-            <Paper>Created by Robert Renbris</Paper>
+            <Paper>
+              Created by Robert Renbris
+            </Paper>
           </Grid>
         </Grid>
       </Box>
@@ -63,11 +66,45 @@ function HallOfFame({teams}) {
   const rows = teams; 
   
   const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
     {
       field: 'name',
       headerName: 'Name',
       width: 150,
+    },
+    {
+      field: 'playedGamesTotal',
+      headerName: 'Played Games',
+      width: 140,
+    },
+    {
+      field: 'wonGamesTotal',
+      headerName: 'Wins',
+      width: 140,
+    },
+    {
+      field: 'lostGamesTotal',
+      headerName: 'Losses',
+      width: 140,
+    },
+    {
+      field: 'winRatio',
+      headerName: 'Win Ratio',
+      width: 100,
+    },
+    {
+      field: 'goalsFor',
+      headerName: 'GF',
+      width: 50,
+    },
+    {
+      field: 'goalsAgainst',
+      headerName: 'GA',
+      width: 50,
+    },
+    {
+      field: 'goalsDifference',
+      headerName: 'Δ',
+      width: 50
     }
   ];
   
@@ -75,22 +112,8 @@ function HallOfFame({teams}) {
 
   return (
     <>
-      <Paper style={{padding: "10px"}}>      
-        <Grid key="grid" container spacing={2}>
-          { rows.map(player => {
-            return (
-              <Fragment key={player.id}>
-                <Grid item xs={4}>
-                  {player.name}
-                </Grid>
-                <Grid item xs={8}>
-                  Statistics...
-                </Grid>
-              </Fragment>
-            );
-          })}  
-        </Grid>
-        {/* <DataGrid
+      <Paper style={{padding: "10px", height: "400px"}}>
+        <DataGrid sx={{".MuiCheckbox-root": { display: "none" }}}
           rows={rows}
           columns={columns}
           initialState={{
@@ -103,7 +126,7 @@ function HallOfFame({teams}) {
           pageSizeOptions={[5]}
           checkboxSelection
           disableRowSelectionOnClick
-        /> */}
+        />
       </Paper>
     </>
   )
