@@ -18,7 +18,7 @@ export const RegisterGameModal = ({open, onClose}) => {
         <MenuItem key={team.id} value={team.id}>{team.name}</MenuItem>
       )
     });
-    items.push(<MenuItem key={0} value={""}>No selected!</MenuItem>)
+    items.push(<MenuItem key={0} value={""}></MenuItem>)
     setItems(items);
   }, [teams]) 
 
@@ -64,7 +64,7 @@ export const RegisterGameModal = ({open, onClose}) => {
     <>
       <Modal open={open} onClose={onClose}>
         <Box>
-          <ModalContent header={"Register Team"} onOk={onSendToBackend} okEnabled={team1Id && team2Id}>
+          <ModalContent header={"Register Finished Game"} onOk={onSendToBackend} okEnabled={team1Id && team2Id}>
             <FormControl fullWidth>
               <InputLabel id="player-1">Team 1</InputLabel>
               <Select

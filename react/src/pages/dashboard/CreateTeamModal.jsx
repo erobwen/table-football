@@ -16,7 +16,7 @@ export const CreateTeamModal = ({open, onClose}) => {
         <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
       )
     });
-    items.push(<MenuItem key={0} value={null}>No selected!</MenuItem>)
+    items.push(<MenuItem key={0} value={null}></MenuItem>)
     setItems(items);
   }, [users]) 
 

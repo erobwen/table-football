@@ -23,7 +23,6 @@ CREATE TABLE games (
   "team2Id" INTEGER REFERENCES teams,
   "team1Score" INTEGER,
   "team2Score" INTEGER,
-  blue_to_red_delta INTEGER
 );
 
 -- TODO: Constraint syntax

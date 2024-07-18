@@ -19,7 +19,7 @@ export const StartGameModal = ({open, onClose}) => {
         <MenuItem key={team.id} value={team.id}>{team.name}</MenuItem>
       )
     });
-    items.push(<MenuItem key={0} value={""}>No selected!</MenuItem>)
+    items.push(<MenuItem key={0} value={""}></MenuItem>)
     setItems(items);
   }, [teams]) 
 
