@@ -28,9 +28,9 @@ const createTables = async () => {
     await client.query(schema);
 
     // Some dummy data for convenient development.  
-    await addUser("Player 1");
-    await addUser("Player 2");
-    await addUser("Player 3");
+    await addUser("Player A");
+    await addUser("Player B");
+    await addUser("Player C");
 
     // Mark done
     await client.query(`
@@ -174,33 +174,24 @@ export async function finishOngoingGame(game) {
  */
 
 export async function updateStatistics(team1Id, team2Id, team1Score, team2Score) {
-  await incrementPlayedStatistics(team1Id);
-  await incrementPlayedStatistics(team2Id);
   if (team1Score > team2Score) {
-    await incrementWinStatistics(team1Id);
-  } else if (team1Score > team2Score) {
-    await incrementWinStatistics(team2Id);
+    await incrementPlayedStatistics(true, team1Id, team1Score, team2Score);
+    await incrementPlayedStatistics(false, team2Id, team2Score, team1Score);
+  } else if (team1Score < team2Score) {
+    await incrementPlayedStatistics(true, team2Id, team2Score, team1Score);
+    await incrementPlayedStatistics(false, team1Id, team1Score, team2Score);
+  } else {
+    await incrementPlayedStatistics(false, team2Id, team2Score, team1Score);
+    await incrementPlayedStatistics(false, team1Id, team1Score, team2Score);
   }
 }
 
-export async function incrementPlayedStatistics(teamId) {
-  const [player1Id, player2Id] = await getPlayerIds(teamId);
-  await client.query(`UPDATE teams SET "playedGamesTotal" = "playedGamesTotal" + 1 WHERE id = ${teamId};`)
-  await client.query(`UPDATE users SET "playedGamesTotal" = "playedGamesTotal" + 1 WHERE users.id = ${player1Id};`)
-  if (player2Id) {
-    await client.query(`UPDATE users SET "playedGamesTotal" = "playedGamesTotal" + 1 WHERE users.id = ${player2Id};`)
-  } else {
-    await client.query(`UPDATE users SET "playedGamesSingle" = "playedGamesSingle" + 1 WHERE users.id = ${player1Id};`)
-  }
-}
-
-export async function incrementWinStatistics(teamId) {
-  const [player1Id, player2Id] = await getPlayerIds(teamId);
-  await client.query(`UPDATE teams SET "wonGamesTotal" = "wonGamesTotal" + 1 WHERE id = ${teamId};`)
-  await client.query(`UPDATE users SET "wonGamesTotal" = "wonGamesTotal" + 1 WHERE id = ${player1Id};`)
-  if (player2Id) {
-    await client.query(`UPDATE users SET "wonGamesTotal" = "wonGamesTotal" + 1 WHERE id = ${player2Id};`)
-  } else {
-    await client.query(`UPDATE users SET "wonGamesSingle" = "wonGamesSingle" + 1 WHERE id = ${player1Id};`)
-  }
+export async function incrementPlayedStatistics(winner, teamId, goalsFor, goalsAgainst) {
+  await client.query(`
+    UPDATE teams SET 
+      "wonGamesTotal" = "wonGamesTotal" + ${winner ? 1 : 0}, 
+      "playedGamesTotal" = "playedGamesTotal" + 1, 
+      "goalsFor" = "goalsFor" + ${goalsFor},   
+      "goalsAgainst" = "goalsAgainst" + ${goalsAgainst}  
+      WHERE id = ${teamId};`);
 }

@@ -1,16 +1,15 @@
-import { Box, Button, Grid, Modal, Paper, TextField } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
+import { Box, Button, Grid, Paper } from "@mui/material";
 import { useLoadedData } from '../../components/hooks';
 import { Fragment, useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
 import { CreateUserModal } from "./CreateUserModal";
 import { ButtonColumn } from "../../components/Widgets";
-import { getUsers } from "../../components/Client";
+import { getTeams } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
 
 export function Dashboard() {
-  const [users, _, reload] = useLoadedData(getUsers);
+  const [teams, _, reload] = useLoadedData(getTeams);
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
@@ -35,7 +34,7 @@ export function Dashboard() {
             <Paper><h3 style={{height:"100px", lineHeight:"100px"}}>Table Football Tracker 1.0</h3></Paper>
           </Grid>
           <Grid item xs={8}>
-            <HallOfFame users={users}/>
+            <HallOfFame teams={teams}/>
           </Grid>
           <Grid item xs={4}>
             <Paper>
@@ -60,8 +59,8 @@ export function Dashboard() {
   )
 }
 
-function HallOfFame({users}) {
-  const rows = users; 
+function HallOfFame({teams}) {
+  const rows = teams; 
   
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },

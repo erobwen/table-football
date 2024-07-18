@@ -1,11 +1,7 @@
 
 CREATE TABLE users (
   id serial PRIMARY KEY,
-  name VARCHAR (255) UNIQUE NOT NULL,
-  "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
-  "playedGamesTotal" INTEGER DEFAULT 0,
-  "wonGamesSingle" INTEGER DEFAULT 0,
-  "playedGamesSingle" INTEGER DEFAULT 0 
+  name VARCHAR (255) UNIQUE NOT NULL
 );
 
 CREATE TABLE teams (
@@ -15,7 +11,9 @@ CREATE TABLE teams (
   "player1Id" INTEGER REFERENCES users,
   "player2Id" INTEGER REFERENCES users,
   "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
-  "playedGamesTotal" INTEGER DEFAULT 0
+  "playedGamesTotal" INTEGER DEFAULT 0,
+  "goalsAgainst" INTEGER DEFAULT 0,
+  "goalsFor" INTEGER DEFAULT 0
 );
 
 CREATE TABLE games (
