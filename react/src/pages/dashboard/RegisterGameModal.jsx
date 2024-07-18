@@ -4,14 +4,14 @@ import { useLoadedData } from "../../components/hooks";
 import { getTeams, postFinishedGame, postTeam } from "../../components/Client";
 import { useEffect, useState } from "react";
 import { InfoModal } from "../../components/Widgets";
-import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
+import { NumberInput } from "../../components/NumberInput";
+// import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput';
 
 
 export const RegisterGameModal = ({open, onClose}) => {
   const [teams] = useLoadedData(getTeams);
   const [items, setItems] = useState();
   useEffect(() => {
-    console.log(teams);
     if (!teams) return;
     const items = teams.map(team => {
       return (
@@ -66,21 +66,33 @@ export const RegisterGameModal = ({open, onClose}) => {
         <Box>
           <ModalContent header={"Register Finished Game"} onOk={onSendToBackend} okEnabled={team1Id && team2Id}>
             <FormControl fullWidth>
-              <InputLabel id="player-1">Team 1</InputLabel>
+              <InputLabel id="player-1">Team 1 & Score</InputLabel>
               <Select
                 labelId="player-1"
                 value={team1Id}
-                label="Player1"
+                label="Choose Team 1"
                 onChange={onSelectTeam1}
               >
                 {items}
               </Select>
             </FormControl>
 
+            <FormControl fullWidth style={{display: "flex"}}>
+              {/* <InputLabel id="team-1-score">Score</InputLabel> */}
+              <NumberInput
+                label="Score of Team 1"
+                value={team1Score}
+                onChange={(event, val) => setTeam1Score(val)}
+              />
+            </FormControl>
+
+            <br/>
+
             <FormControl fullWidth>
-              <InputLabel id="player-2">Team 2</InputLabel>
+              <InputLabel id="player-2">Team 2 & Score</InputLabel>
               <Select
                 labelId="player-2"
+                label="Choose Team 1"
                 value={team2Id}
                 onChange={onSelectTeam2}
               >
@@ -89,15 +101,7 @@ export const RegisterGameModal = ({open, onClose}) => {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel id="team-1-score">Team 1 Score</InputLabel>
-              <NumberInput
-                value={team1Score}
-                onChange={(event, val) => setTeam1Score(val)}
-              />
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel id="team-2-score">Team 2 Score</InputLabel>
+              {/* <InputLabel id="team-2-score">Score</InputLabel> */}
               <NumberInput
                 value={team2Score}
                 onChange={(event, val) => setTeam2Score(val)}
