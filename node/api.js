@@ -28,7 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // allow CORS:
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  const origin = req.get('origin');
+  if (origin === "http://localhost:5173") {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Dev
+  } else if (origin === "http://localhost:4173") {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4173'); // Compiled
+  }
   res.setHeader(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
   res.setHeader(`Access-Control-Allow-Headers`, `Content-Type`);
   next()
