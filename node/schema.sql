@@ -11,6 +11,7 @@ CREATE TABLE teams (
   "player1Id" INTEGER REFERENCES players,
   "player2Id" INTEGER REFERENCES players,
   "wonGamesTotal" INTEGER DEFAULT 0, -- breaks normality, but is more simple and efficient.
+  "drawGamesTotal" INTEGER DEFAULT 0, -- possible in table football? 
   "playedGamesTotal" INTEGER DEFAULT 0,
   "goalsAgainst" INTEGER DEFAULT 0,
   "goalsFor" INTEGER DEFAULT 0

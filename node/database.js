@@ -103,7 +103,8 @@ const changePerspective = (id, gameHistory) => {
       if (game.team1Id === id) {
         return ({
           id: game.id,
-          win: game.team1Score > game.team2Score,  
+          win: game.team1Score > game.team2Score,
+          draw: game.team1Score === game.team2Score,
           opponentId: game.team2Id,
           opponentName: game.team2Name,
           yourScore: game.team1Score,
@@ -114,6 +115,7 @@ const changePerspective = (id, gameHistory) => {
         return ({
           id: game.id,
           win: game.team2Score > game.team1Score,
+          draw: game.team1Score === game.team2Score,
           opponentId: game.team1Id,
           opponentName: game.team1Name,
           yourScore: game.team2Score,
@@ -226,21 +228,22 @@ export async function finishOngoingGame(game) {
 
 export async function updateStatistics(team1Id, team2Id, team1Score, team2Score) {
   if (team1Score > team2Score) {
-    await incrementPlayedStatistics(true, team1Id, team1Score, team2Score);
-    await incrementPlayedStatistics(false, team2Id, team2Score, team1Score);
+    await incrementPlayedStatistics(true, false, team1Id, team1Score, team2Score);
+    await incrementPlayedStatistics(false, false, team2Id, team2Score, team1Score);
   } else if (team1Score < team2Score) {
-    await incrementPlayedStatistics(true, team2Id, team2Score, team1Score);
-    await incrementPlayedStatistics(false, team1Id, team1Score, team2Score);
+    await incrementPlayedStatistics(true, false, team2Id, team2Score, team1Score);
+    await incrementPlayedStatistics(false, false, team1Id, team1Score, team2Score);
   } else {
-    await incrementPlayedStatistics(false, team2Id, team2Score, team1Score);
-    await incrementPlayedStatistics(false, team1Id, team1Score, team2Score);
+    await incrementPlayedStatistics(false, true, team2Id, team2Score, team1Score);
+    await incrementPlayedStatistics(false, true, team1Id, team1Score, team2Score);
   }
 }
 
-export async function incrementPlayedStatistics(winner, teamId, goalsFor, goalsAgainst) {
+export async function incrementPlayedStatistics(winner, draw, teamId, goalsFor, goalsAgainst) {
   await client.query(`
     UPDATE teams SET 
       "wonGamesTotal" = "wonGamesTotal" + ${winner ? 1 : 0}, 
+      "drawGamesTotal" = "drawGamesTotal" + ${draw ? 1 : 0}, 
       "playedGamesTotal" = "playedGamesTotal" + 1, 
       "goalsFor" = "goalsFor" + ${goalsFor},   
       "goalsAgainst" = "goalsAgainst" + ${goalsAgainst}  
