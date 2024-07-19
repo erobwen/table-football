@@ -9,6 +9,7 @@ import { getTeams, getTeamsSorted } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 
 export function Dashboard() {
   const [teams, _, reload] = useLoadedData(getTeamsSorted);
@@ -44,7 +45,7 @@ export function Dashboard() {
                 <Button onClick={onCreatePlayer} variant="contained">New Player</Button>
                 <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
                 <Button onClick={onRegisterGame} variant="contained">Register Finished Game</Button>
-                <Button onClick={onStartGame} variant="contained" style={{backgroundColor: "red"}}>Start Game!</Button>
+                <Button onClick={onStartGame} variant="contained" style={{backgroundColor: "red"}}><SportsSoccerIcon style={{marginRight: "5px"}}/>Start Game!</Button> {/**/}
               </ButtonRow>
             </Paper>
           </Grid>          

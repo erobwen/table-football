@@ -5,8 +5,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Dashboard } from './pages/dashboard/Dashboard'
 import { Game } from './pages/game/Game';
 import { Team } from './pages/team/Team';
+import imgUrl from './assets/vector-JUL-2021-61.jpg'
 
 export default function App() {
+  console.log(imgUrl);
   return (
     <BrowserRouter>
       <Routes>
