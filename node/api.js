@@ -119,8 +119,8 @@ app.get('/api/teams/sorted', async (req, res) => {
   try {
     const teams = await getAllTeams();
     for (let team of teams) {
-      team.winRatio = team.playedGamesTotal > 0 ? (team.wonGamesTotal + 0.0) / team.playedGamesTotal : "N/A";
-      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal;
+      team.winRatio = team.playedGamesTotal > 0 ? team.wonGamesTotal / team.playedGamesTotal : "N/A";
+      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;
       team.goalsDifference = team.goalsFor - team.goalsAgainst;
     }
     teams.sort((t1, t2) => {

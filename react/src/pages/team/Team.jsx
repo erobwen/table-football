@@ -20,16 +20,17 @@ export function Team() {
   const [shownHistory, setShownHistory] = useState([])
   const [shownSummary, setShownSummary] = useState({});
   useEffect(() => {
-    console.log(selectedTeamId);
-    console.log(selectedTeamName);
     if (!team || !history) return; 
     if (!selectedTeamId) {
+
       // Just display normal
       setShownHistory(history);
-      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal;// - team.drawGamesTotal;
+      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;// - team.drawGamesTotal;
       team.winRatio = team.wonGamesTotal / team.playedGamesTotal;
       setShownSummary(team);
+
     } else {
+
       // Display comparison data
       setShownHistory(history.filter(record => (record.opponentId === selectedTeamId)));
       const summary = history.reduce((result, current) => {
