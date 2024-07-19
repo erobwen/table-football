@@ -1,13 +1,13 @@
 import axios from "axios";
 
-let base = "http://localhost:3000"
+const base = "http://localhost:3000"
 
-interface Player {
+export interface Player {
   id: number, 
   name: string
 }
 
-interface Team {
+export interface Team {
   id: number,
   teamKey: string,
   name: string,
@@ -20,13 +20,13 @@ interface Team {
   goalsFor: number
 }
 
-interface TeamExtended extends Team {
-  winRatio: number, 
+export interface TeamExtended extends Team {
+  winRatio: number|string, // String "N/A" when no matches played.
   lostGamesTotal: number,
   goalsDifference: number
 }
 
-interface MatchPlayed {
+export interface MatchPlayed {
   id: number,
   win: boolean,
   draw: boolean,
@@ -37,7 +37,7 @@ interface MatchPlayed {
   difference: number
 }
 
-interface Game {
+export interface Game {
   id: number,
   finished: boolean,
   team1Id: number, 
@@ -45,7 +45,6 @@ interface Game {
   team1Score: number, 
   team2Score: number 
 }
-
 
 export async function getPlayers(): Promise<Player[]> {
   try {
@@ -132,16 +131,7 @@ export async function getOngoingGame() : Promise<Game> {
   }
 }
 
-export async function updateOngoingGame(game: Game) {
-  try {
-    const result = await axios.put(base + "/api/ongoing-game", game);
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function finishOngoingGame(game: Game) {
+export async function updateOngoingGame(game: Game) : Promise<string> {
   try {
     const result = await axios.put(base + "/api/ongoing-game", game);
     return result.data; 

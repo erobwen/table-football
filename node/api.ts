@@ -3,6 +3,7 @@ import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlay
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { TeamExtended } from './interfaces';
 
 // Extended: https://swagger.io/specification/#infoObject
 const swaggerOptions = {
@@ -128,14 +129,14 @@ app.get('/api/teams/sorted', async (req, res) => {
       team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;
       team.goalsDifference = team.goalsFor - team.goalsAgainst;
     }
-    teams.sort((t1, t2) => {
-      t1 = t1.winRatio;
-      t2 = t2.winRatio;
+    teams.sort((t1:TeamExtended, t2:TeamExtended) => {
+      const t1w = t1.winRatio;
+      const t2w = t2.winRatio;
       if (typeof(t1) === "number" && typeof(t2) === "number") {
         return t2 - t1;
-      } else if (t1 === "N/A" && t2 === "N/A") {
+      } else if (t1w === "N/A" && t2w === "N/A") {
         return 0;
-      } else if (t1 === "N/A") {
+      } else if (t1w === "N/A") {
         return 1;
       } else {
         return -1;
@@ -163,7 +164,7 @@ app.get('/api/teams/sorted', async (req, res) => {
  */
 app.get('/api/teams/:id', async (req, res) => {
   try {
-    res.status(200).send(await getTeam(req.params.id));
+    res.status(200).send(await getTeam(parseInt(req.params.id)));
   } catch (error) {
     res.status(500).send(error);
   } 
@@ -257,7 +258,7 @@ app.post('/api/games', async (req, res) => {
   try {
     await addGame(finished, team1Id, team2Id, team1Score, team2Score); 
     res.status(200).send("Successfully registered game!");
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     res.status(500).send(error.message);
   }
@@ -281,7 +282,7 @@ app.get('/api/ongoing-game', async (req, res) => {
   try {
     const game = await getOngoingGame(); 
     res.status(200).send(game);
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     res.status(500).send(error.message);
   }
@@ -310,7 +311,7 @@ app.put('/api/ongoing-game', async (req, res) => {
       await updateOngoingGame(game); 
     }
     res.status(200).send("Updated game status!");
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     res.status(500).send(error.message);
   }
