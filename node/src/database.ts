@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed } from './interfaces';
+import { Game, MatchPlayed, MatchResult } from './interfaces';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
@@ -122,10 +122,12 @@ const changePerspective = (id:number, gameHistory:GamePlayedUnprocessed[]) : Mat
   return gameHistory.map(
     (game) => {
       if (game.team1Id === id) {
+        // team1Id perspective
         return ({
           id: game.id,
-          win: game.team1Score > game.team2Score,
-          draw: game.team1Score === game.team2Score,
+          result: game.team1Score === game.team2Score ? MatchResult.Draw: (
+            game.team1Score > game.team2Score ? MatchResult.Win : MatchResult.Loss
+          ),
           opponentId: game.team2Id,
           opponentName: game.team2Name,
           yourScore: game.team1Score,
@@ -133,8 +135,12 @@ const changePerspective = (id:number, gameHistory:GamePlayedUnprocessed[]) : Mat
           difference: game.team1Score - game.team2Score
         })
       } else {
+        // team12d perspective
         return ({
           id: game.id,
+          result: game.team2Score === game.team1Score ? MatchResult.Draw : (
+            game.team2Score > game.team1Score ? MatchResult.Win : MatchResult.Loss
+          ),
           win: game.team2Score > game.team1Score,
           draw: game.team1Score === game.team2Score,
           opponentId: game.team1Id,

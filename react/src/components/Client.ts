@@ -26,10 +26,15 @@ export interface TeamExtended extends Team {
   goalsDifference: number
 }
 
+export enum MatchResult {
+  Win = "win",
+  Draw = "draw",
+  Loss = "loss"
+}
+
 export interface MatchPlayed {
   id: number,
-  win: boolean,
-  draw: boolean,
+  result: MatchResult,
   opponentId: number,
   opponentName: string,
   yourScore: number,
