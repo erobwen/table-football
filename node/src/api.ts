@@ -94,8 +94,6 @@ app.post('/api/players', async (req, res) => {
  *    responses:
  *      '200':
  *        description: Normal response
- *      '400':
- *        description: Input error
  *      '500':
  *        description: Server error
  */
@@ -115,9 +113,9 @@ app.get('/api/teams', async (req, res) => {
  *      description: List all teams, augmented with information and sorted.
  *    responses:
  *      '200':
- *        description: Normal response
+ *        description: Normal response'
  *      '400':
- *        description: Input error
+ *        description: Input error'
  *      '500':
  *        description: Server error
  */

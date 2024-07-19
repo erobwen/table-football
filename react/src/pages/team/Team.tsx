@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, Paper } from "@mui/material";
 import { getTeam, getTeamHistory, MatchPlayed, Team as TeamInterface, TeamExtended } from "../../components/Client";
-import { DataGrid, GridCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,12 +30,12 @@ export function Team() {
   const navigate = useNavigate();
 
   // Selected team to compare with
-  const [selectedTeamId, setSelectedTeamId] = useState(null);
-  const [selectedTeamName, setSelectedTeamName] = useState("");
+  const [selectedTeamId, setSelectedTeamId] = useState<number|null>(null);
+  const [selectedTeamName, setSelectedTeamName] = useState<string|null>("");
 
   // Data shown
   const [shownHistory, setShownHistory] = useState<MatchPlayed[]>([])
-  const [shownSummary, setShownSummary] = useState<TeamExtended>({});
+  const [shownSummary, setShownSummary] = useState<TeamExtended|null>(null);
   useEffect(() => {
     if (!team || !history) return; 
     if (!selectedTeamId) {
@@ -81,21 +81,11 @@ export function Team() {
     }
   }, [team, history, selectedTeamId])
 
-  const columns = [
+  const columns: GridColDef<MatchPlayed>[] = [
     {
       field: 'opponentName',
       headerName: 'Opponent',
       width: 150,
-      renderCell: !selectedTeamId && ((params: GridCellParams) => (
-          <Button style={{textTransform: "none"}} variant="text" onClick={
-            ()=> { 
-              setSelectedTeamId(params.row.opponentId); 
-              setSelectedTeamName(params.row.opponentName);
-            }
-          }>
-            {params.row.opponentName}
-          </Button>
-        ))
     },
     {
       field: 'win',
@@ -121,6 +111,19 @@ export function Team() {
       width: 60
     }
   ];
+
+  if (!selectedTeamId) {
+    columns[0].renderCell = ((params: GridCellParams) => (
+      <Button style={{textTransform: "none"}} variant="text" onClick={
+        ()=> { 
+          setSelectedTeamId(params.row.opponentId); 
+          setSelectedTeamName(params.row.opponentName);
+        }
+      }>
+        {params.row.opponentName}
+      </Button>
+    ))
+  }
 
   if (!team || !shownHistory || !shownSummary) return <CircularProgress/>;
 
