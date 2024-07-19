@@ -2,92 +2,42 @@ import axios from "axios";
 
 let base = "http://localhost:3000"
 
-export async function getPlayers() {
-  try {
-    return (await axios.get(base + "/api/players")).data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
+interface Player {
+  id: number, 
+  name: string
 }
 
-export async function postPlayer(name: string) {
-  try {
-    const result = await axios.post(base + "/api/players", {name}); 
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
+interface Team {
+  id: number,
+  teamKey: string,
+  name: string,
+  player1Id: number, 
+  player2Id: number,
+  wonGamesTotal: number,
+  drawGamesTotal: number,
+  playedGamesTotal: number,
+  goalsAgainst: number,
+  goalsFor: number
 }
 
-export async function getTeams() {
-  try {
-    return (await axios.get(base + "/api/teams")).data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
+interface TeamExtended extends Team {
+  winRatio: number, 
+  lostGamesTotal: number,
+  goalsDifference: number
 }
 
-export async function getTeamsSorted() {
-  try {
-    return (await axios.get(base + "/api/teams/sorted")).data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
+interface MatchPlayed {
+  id: number,
+  win: boolean,
+  draw: boolean,
+  opponentId: number,
+  opponentName: string,
+  yourScore: number,
+  theirScore: number,
+  difference: number
 }
 
-export async function getTeam(id:number) {
-  try {
-    return (await axios.get(base + `/api/teams/${id}`)).data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function getTeamHistory(id:number) {
-  try {
-    return (await axios.get(base + `/api/teams/${id}/history`)).data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function postTeam(name:string, player1Id:number, player2Id:number) {
-  try {
-    const result = await axios.post(base + "/api/teams", {name, player1Id, player2Id}); 
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function postFinishedGame(team1Id:number, team2Id:number, team1Score:number, team2Score:number) {
-  try {
-    const result = await axios.post(base + "/api/games", {finished: true, team1Id, team2Id, team1Score, team2Score}); 
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function postStartedGame(team1Id:number, team2Id:number) {
-  try {
-    const result = await axios.post(base + "/api/games", {finished: false, team1Id, team2Id}); 
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-export async function getOngoingGame() {
-  try {
-    const result = await axios.get(base + "/api/ongoing-game");
-    return result.data; 
-  } catch(error:any) {
-    throw new Error(error.response.data);
-  }
-}
-
-interface GameInterface {
+interface Game {
   id: number,
   finished: boolean,
   team1Id: number, 
@@ -96,7 +46,93 @@ interface GameInterface {
   team2Score: number 
 }
 
-export async function updateOngoingGame(game: GameInterface) {
+
+export async function getPlayers(): Promise<Player[]> {
+  try {
+    return (await axios.get(base + "/api/players")).data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function postPlayer(name: string) : Promise<string>{
+  try {
+    const result = await axios.post(base + "/api/players", {name}); 
+    return result.data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function getTeams(): Promise<Team[]> {
+  try {
+    return (await axios.get(base + "/api/teams")).data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function getTeamsSorted() : Promise<TeamExtended[]>{
+  try {
+    return (await axios.get(base + "/api/teams/sorted")).data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function getTeam(id:number) : Promise<Team> {
+  try {
+    return (await axios.get(base + `/api/teams/${id}`)).data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function getTeamHistory(id:number) : Promise<MatchPlayed[]>{
+  try {
+    return (await axios.get(base + `/api/teams/${id}/history`)).data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function postTeam(name:string, player1Id:number, player2Id:number) : Promise<string> {
+  try {
+    const result = await axios.post(base + "/api/teams", {name, player1Id, player2Id}); 
+    return result.data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function postFinishedGame(team1Id:number, team2Id:number, team1Score:number, team2Score:number) : Promise<string> {
+  try {
+    const result = await axios.post(base + "/api/games", {finished: true, team1Id, team2Id, team1Score, team2Score}); 
+    return result.data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function postStartedGame(team1Id:number, team2Id:number) : Promise<string> {
+  try {
+    const result = await axios.post(base + "/api/games", {finished: false, team1Id, team2Id}); 
+    return result.data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function getOngoingGame() : Promise<Game> {
+  try {
+    const result = await axios.get(base + "/api/ongoing-game");
+    return result.data; 
+  } catch(error:any) {
+    throw new Error(error.response.data);
+  }
+}
+
+export async function updateOngoingGame(game: Game) {
   try {
     const result = await axios.put(base + "/api/ongoing-game", game);
     return result.data; 
@@ -105,7 +141,7 @@ export async function updateOngoingGame(game: GameInterface) {
   }
 }
 
-export async function finishOngoingGame(game: GameInterface) {
+export async function finishOngoingGame(game: Game) {
   try {
     const result = await axios.put(base + "/api/ongoing-game", game);
     return result.data; 

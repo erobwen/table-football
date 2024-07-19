@@ -4,7 +4,7 @@ import { Fragment, useCallback, useState } from "react";
 import { CreateTeamModal } from "./CreateTeamModal";
 import { RegisterGameModal } from "./RegisterGameModal";
 import { CreatePlayerModal } from "./CreatePlayerModal";
-import { ButtonColumn, ButtonRow } from "../../components/Widgets";
+import { ButtonColumn, ButtonRow, darkBlue, lightBlue } from "../../components/Widgets";
 import { getTeams, getTeamsSorted } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
 import { DataGrid } from "@mui/x-data-grid";
@@ -34,13 +34,13 @@ export function Dashboard() {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Paper><h3 style={{height:"100px", lineHeight:"100px"}}>Table Football Tracker 1.0</h3></Paper>
+            <Paper style={{backgroundColor: darkBlue}}><h3 style={{height:"100px", lineHeight:"100px"}}>Table Football Tracker 1.0</h3></Paper>
           </Grid>
           <Grid item xs={12}>
             <HallOfFame teams={teams}/>
           </Grid>
           <Grid item xs={12}>
-            <Paper style={{padding: "20px"}}>
+            <Paper style={{padding: "20px", backgroundColor: lightBlue }}>
               <ButtonRow>
                 <Button onClick={onCreatePlayer} variant="contained">New Player</Button>
                 <Button onClick={onCreateTeam} variant="contained">Register Team</Button>
@@ -50,7 +50,7 @@ export function Dashboard() {
             </Paper>
           </Grid>          
           <Grid item xs={12}>
-            <Paper>
+            <Paper style={{backgroundColor: darkBlue}}>
               Created by Robert Renbris
             </Paper>
           </Grid>

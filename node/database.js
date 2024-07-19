@@ -127,12 +127,12 @@ const changePerspective = (id, gameHistory) => {
   );  
 }
 
-export async function getSharedGameHistory(team1Id, team2Id) {
+export async function getSharedGameHistory(team1Id, team2Id) { // Note: not in use currently, taken care of on front end. 
   return (await client.query(`
     SELECT games.id, "team1Id", "team2Id", "team1Score", "team2Score", team1.name as "team1Name", team2.name as "team2Name" FROM games 
     JOIN teams as team1 ON games."team1Id"=team1.id
     JOIN teams as team2 ON games."team2Id"=team2.id
-    WHERE (games."team1Id"=1 AND games."team2Id"=2) OR (games."team1Id"=2 AND games."team2Id"=1) AND finished=true;
+    WHERE (games."team1Id"=${team1Id} AND games."team2Id"=${team2Id}) OR (games."team1Id"=${team2Id} AND games."team2Id"=${team1Id}) AND finished=true;
   `)).rows;
 }
 

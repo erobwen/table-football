@@ -27,3 +27,6 @@ export const InfoModal = ({message, onClose}) => (
     </Modal>
   </div>
 )
+
+export const lightBlue = "#A6A6F4";
+export const darkBlue = "#7883E4";

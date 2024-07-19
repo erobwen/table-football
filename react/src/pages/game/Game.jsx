@@ -2,6 +2,7 @@ import { Box, Button, CircularProgress, Grid, Paper } from "@mui/material";
 import { getOngoingGame, getTeam, updateOngoingGame } from "../../components/Client"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { darkBlue, lightBlue } from "../../components/Widgets";
 
 export const Game = () => {
   const [game, setGame] = useState()
@@ -52,24 +53,24 @@ export const Game = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Paper><h2 style={{height:"100px", lineHeight:"100px"}}>{team1Id.name} vs {team2Id.name}</h2></Paper>
+        <Paper style={{backgroundColor: darkBlue}}><h2 style={{height:"100px", lineHeight:"100px"}}>{team1Id.name} vs {team2Id.name}</h2></Paper>
       </Grid>
       <Grid item xs={6}>
-        <Paper>
+        <Paper style={{backgroundColor: "white"}}>
           <Box>{team1Id.name} score</Box>
           <Box style={{fontSize: "40px"}}>{game.team1Score}</Box>
           <Button onClick={scoreTeam1}>+</Button>
         </Paper>
       </Grid>
       <Grid item xs={6}>
-        <Paper>
+        <Paper style={{backgroundColor: "white"}}>
           <Box>{team2Id.name} score</Box>
           <Box style={{fontSize: "40px"}}>{game.team2Score}</Box>
           <Button onClick={scoreTeam2}>+</Button>
         </Paper>
       </Grid>
       <Grid item xs={12}>
-        <Paper><Button onClick={finishGame}>Finish</Button></Paper>
+        <Paper style={{backgroundColor: darkBlue}}><Button onClick={finishGame}>Finish</Button></Paper>
       </Grid>
     </Grid>
   );

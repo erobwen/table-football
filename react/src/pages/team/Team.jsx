@@ -5,6 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
+import { darkBlue, lightBlue } from "../../components/Widgets";
 
 export function Team() {
   const { id } = useParams();
@@ -103,7 +104,7 @@ export function Team() {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Paper>
+            <Paper style={{backgroundColor: lightBlue}}>
               <h3 style={{height:"100px", lineHeight:"100px"}}>Matches of {team.name}
                 {selectedTeamName && <span>&nbsp;vs&nbsp;</span>}
                 {selectedTeamName && 
@@ -115,7 +116,7 @@ export function Team() {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <Paper>
+            <Paper style={{backgroundColor: lightBlue}}>
               <Box style={{padding: "20px", gap: "20px", display: "flex", flexDirection: "row"}}>
                 <Box>Played: {shownSummary.playedGamesTotal}</Box>
                 <Box>Wins: {shownSummary.wonGamesTotal}</Box>
@@ -146,7 +147,7 @@ export function Team() {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <Paper style={{padding: "20px"}}>
+            <Paper style={{padding: "20px", backgroundColor: lightBlue}}>
               <Button onClick={() => navigate("/")} variant="contained">Back</Button>
             </Paper>
           </Grid>          
