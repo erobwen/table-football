@@ -1,11 +1,11 @@
 {
   "name": "node",
   "version": "1.0.0",
-  "main": "api.ts",
+  "main": "src/api.ts",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon api.ts",
+    "start": "tsx watch src/api.ts",
     "build": "tsc -p ."
   },
   "author": "",

@@ -3,7 +3,7 @@ import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlay
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { TeamExtended } from './interfaces';
+import { TeamExtended } from './interfaces.js';
 
 // Extended: https://swagger.io/specification/#infoObject
 const swaggerOptions = {

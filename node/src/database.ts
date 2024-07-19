@@ -6,8 +6,8 @@ var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
   user: 'postgres',
-  // host: 'localhost', // when running outside docker for dev. 
-  host: 'db',
+  host: 'localhost', // when running outside docker for dev. 
+  // host: 'db',
   database: 'postgres',
   password: '1234',
   port: 5432,
