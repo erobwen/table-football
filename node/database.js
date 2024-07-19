@@ -86,6 +86,54 @@ export async function getTeam(id) {
   return (await client.query(`SELECT * FROM teams WHERE teams.id=${id};`)).rows[0];
 } 
 
+export async function getTeamGameHistory(id) {
+  return (changePerspective(id, (
+    await client.query(`
+      SELECT games.id, "team1Id", "team2Id", "team1Score", "team2Score", team1.name as "team1Name", team2.name as "team2Name" FROM games 
+      JOIN teams as team1 ON games."team1Id"=team1.id
+      JOIN teams as team2 ON games."team2Id"=team2.id
+      WHERE (games."team1Id"=${id} OR games."team2Id"=${id}) AND finished=true;
+    `)).rows
+  ));  
+}
+
+const changePerspective = (id, gameHistory) => {
+  return gameHistory.map(
+    (game) => {
+      if (game.team1Id === id) {
+        return ({
+          id: game.id,
+          win: game.team1Score > game.team2Score,  
+          opponentId: game.team2Id,
+          opponentName: game.team2Name,
+          yourScore: game.team1Score,
+          theirScore: game.team2Score,
+          difference: game.team1Score - game.team2Score
+        })
+      } else {
+        return ({
+          id: game.id,
+          win: game.team2Score > game.team1Score,
+          opponentId: game.team1Id,
+          opponentName: game.team1Name,
+          yourScore: game.team2Score,
+          theirScore: game.team1Score,
+          difference: game.team2Score - game.team1Score
+        })
+      }
+    }
+  );  
+}
+
+export async function getSharedGameHistory(team1Id, team2Id) {
+  return (await client.query(`
+    SELECT games.id, "team1Id", "team2Id", "team1Score", "team2Score", team1.name as "team1Name", team2.name as "team2Name" FROM games 
+    JOIN teams as team1 ON games."team1Id"=team1.id
+    JOIN teams as team2 ON games."team2Id"=team2.id
+    WHERE (games."team1Id"=1 AND games."team2Id"=2) OR (games."team1Id"=2 AND games."team2Id"=1) AND finished=true;
+  `)).rows;
+}
+
 export function uniqueTeamKey(id1, id2) {
   // Note: Null/undefined is set to 0, this works since serial starts from 1'
   if (!id1) id1 = 0;
@@ -107,8 +155,11 @@ export async function addTeam(name, player1Id, player2Id) {
 }
 
 export async function getPlayerIds(teamId) {
+  const result = [];
   const team = await getTeam(teamId);
-  return [team.player1Id, team.player2Id];
+  if (team.player1Id) result.push(team.player1Id);
+  if (team.player2Id) result.push(team.player2Id);
+  return result;
 }
 
 

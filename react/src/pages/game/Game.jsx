@@ -52,19 +52,19 @@ export const Game = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Paper><h2 style={{height:"100px", lineHeight:"100px"}}>Game! ({team1Id.name} vs {team2Id.name})</h2></Paper>
+        <Paper><h2 style={{height:"100px", lineHeight:"100px"}}>{team1Id.name} vs {team2Id.name}</h2></Paper>
       </Grid>
       <Grid item xs={6}>
         <Paper>
-          <h3>{team1Id.name} score</h3>
-          <Box>{game.team1Score}</Box>
+          <Box>{team1Id.name} score</Box>
+          <Box style={{fontSize: "40px"}}>{game.team1Score}</Box>
           <Button onClick={scoreTeam1}>+</Button>
         </Paper>
       </Grid>
       <Grid item xs={6}>
         <Paper>
-          <h3>{team2Id.name} score</h3>
-          <Box>{game.team2Score}</Box>
+          <Box>{team2Id.name} score</Box>
+          <Box style={{fontSize: "40px"}}>{game.team2Score}</Box>
           <Button onClick={scoreTeam2}>+</Button>
         </Paper>
       </Grid>

@@ -43,6 +43,13 @@ export async function getTeam(id) {
   }
 }
 
+export async function getTeamHistory(id) {
+  try {
+    return (await axios.get(base + `/api/teams/${id}/history`)).data; 
+  } catch(error) {
+    throw new Error(error.response.data);
+  }
+}
 
 export async function postTeam(name, player1Id, player2Id) {
   try {

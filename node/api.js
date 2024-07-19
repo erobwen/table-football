@@ -1,4 +1,4 @@
-import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlayers, getOngoingGame, getTeam, updateOngoingGame } from './database.js'; 
+import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlayers, getOngoingGame, getTeam, updateOngoingGame, getPlayerIds, getTeamGameHistory } from './database.js'; 
 
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -83,13 +83,15 @@ app.post('/api/players', async (req, res) => {
 /**
  * @swagger
  * /api/teams:
- *    post:
+ *    get:
  *      description: List all teams.
  *    responses:
  *      '200':
- *        description: List all teams.
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
  *      '500':
- *        description: Server error.
+ *        description: Server error
  */
 app.get('/api/teams', async (req, res) => {
   try {
@@ -102,14 +104,16 @@ app.get('/api/teams', async (req, res) => {
 
 /**
  * @swagger
- * /api/teams:
- *    post:
+ * /api/teams/sorted:
+ *    get:
  *      description: List all teams, augmented with information and sorted.
  *    responses:
  *      '200':
- *        description: List all teams
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
  *      '500':
- *        description: Server errlr
+ *        description: Server error
  */
 app.get('/api/teams/sorted', async (req, res) => {
   try {
@@ -138,6 +142,20 @@ app.get('/api/teams/sorted', async (req, res) => {
   } 
 });
 
+
+/**
+ * @swagger
+ * /api/teams/{id}:
+ *    get:
+ *      description: Get a team.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
+ */
 app.get('/api/teams/:id', async (req, res) => {
   try {
     res.status(200).send(await getTeam(req.params.id));
@@ -146,6 +164,43 @@ app.get('/api/teams/:id', async (req, res) => {
   } 
 });
 
+
+/**
+ * @swagger
+ * /api/teams/{id}/history:
+ *    get:
+ *      description: Get a team.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
+ */
+app.get('/api/teams/:id/history', async (req, res) => {
+  // console.log(req.params.id);
+  try {
+    res.status(200).send(await getTeamGameHistory(parseInt(req.params.id)));
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+
+/**
+ * @swagger
+ * /api/teams:
+ *    post:
+ *      description: Create a team.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
+ */
 app.post('/api/teams', async (req, res) => {
   let {name, player1Id, player2Id} = req.body;
   if (player1Id === "") player1Id = null;
@@ -165,14 +220,31 @@ app.post('/api/teams', async (req, res) => {
 
 
 /**
- * Games
+ * @swagger
+ * /api/games:
+ *    post:
+ *      description: Create a game.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
  */
-
 app.post('/api/games', async (req, res) => {
   let {finished, team1Id, team2Id, team1Score=0, team2Score=0} = req.body;
   if (team1Id === team2Id) {
     return res.status(400).send("A team cannot play against itself!");
   }
+  const team1Players = await getPlayerIds(team1Id);
+  const team2Players = await getPlayerIds(team2Id);
+  for (let player of team1Players) {
+    if (team2Players.includes(player)) {
+      return res.status(400).send("A player cannot play on both sides!");
+    }
+  }
+
   if (team1Score < 0 || team2Score < 0) {
     return res.status(400).send("Negative score not possible!");
   }
@@ -188,9 +260,18 @@ app.post('/api/games', async (req, res) => {
 
 
 /**
- * Ongoing game
+ * @swagger
+ * /api/ongoing-game:
+ *    post:
+ *      description: Get ongoing game.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
  */
-
 app.get('/api/ongoing-game', async (req, res) => {
   try {
     const game = await getOngoingGame(); 
@@ -202,7 +283,19 @@ app.get('/api/ongoing-game', async (req, res) => {
 });
 
 
-// Note: Use this endpoint to finish as well, by sending game.finished = true;
+/**
+ * @swagger
+ * /api/ongoing-game:
+ *    put:
+ *      description: Update ongoing game, finish it by sending data where finished=true.
+ *    responses:
+ *      '200':
+ *        description: Normal response
+ *      '400':
+ *        description: Input error
+ *      '500':
+ *        description: Server error
+ */
 app.put('/api/ongoing-game', async (req, res) => {
   let game = req.body;
   try {

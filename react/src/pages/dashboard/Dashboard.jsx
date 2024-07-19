@@ -8,6 +8,7 @@ import { ButtonColumn, ButtonRow } from "../../components/Widgets";
 import { getTeams, getTeamsSorted } from "../../components/Client";
 import { StartGameModal } from "./StartGameModal";
 import { DataGrid } from "@mui/x-data-grid";
+import { Link } from "react-router-dom";
 
 export function Dashboard() {
   const [teams, _, reload] = useLoadedData(getTeamsSorted);
@@ -70,6 +71,9 @@ function HallOfFame({teams}) {
       field: 'name',
       headerName: 'Name',
       width: 150,
+      renderCell: (params) => (
+        <Link to={`/teams/${params.row.id}`}>{params.value}</Link>
+      ),
     },
     {
       field: 'playedGamesTotal',
