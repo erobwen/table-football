@@ -29,7 +29,7 @@ services:
       - /usr/src/app/node_modules    
     tty: true
     ports: 
-      - "5173:5173"
+      - "5173:4173"
 
   db:
     image: postgres

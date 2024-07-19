@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm build
+RUN npm run build
 
-CMD node dist/index.js
+CMD node dist/api.js
 
 EXPOSE 3000
