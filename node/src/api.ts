@@ -130,8 +130,8 @@ app.get('/api/teams/sorted', async (req, res) => {
     teams.sort((t1:TeamExtended, t2:TeamExtended) => {
       const t1w = t1.winRatio;
       const t2w = t2.winRatio;
-      if (typeof(t1) === "number" && typeof(t2) === "number") {
-        return t2 - t1;
+      if (typeof(t1w) === "number" && typeof(t2w) === "number") {
+        return t2w - t1w;
       } else if (t1w === "N/A" && t2w === "N/A") {
         return 0;
       } else if (t1w === "N/A") {
