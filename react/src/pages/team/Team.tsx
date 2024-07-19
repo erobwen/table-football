@@ -1,16 +1,32 @@
 import { Box, Button, CircularProgress, Grid, Paper } from "@mui/material";
-import { useLoadedData } from '../../components/hooks';
-import { getTeam, getTeamHistory } from "../../components/Client";
-import { DataGrid } from "@mui/x-data-grid";
+import { getTeam, getTeamHistory, MatchPlayed, Team as TeamInterface, TeamExtended } from "../../components/Client";
+import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
-import { darkBlue, lightBlue } from "../../components/Widgets";
+import { lightBlue } from "../../components/Widgets";
 
 export function Team() {
   const { id } = useParams();
-  const [history] = useLoadedData(() => getTeamHistory(id), null, [id]);
-  const [team] = useLoadedData(() => getTeam(id), null, [id]);
+  if (!id) return; 
+  const teamId = parseInt(id);
+
+  // History
+  const [history, setHistory] = useState<MatchPlayed[]|null>(null);
+  useEffect(() => {
+    (async () => {
+      setHistory(await getTeamHistory(teamId))
+    })();
+  }, [teamId]);
+
+  // Team
+  const [team, setTeam] = useState<TeamInterface|null>(null);
+  useEffect(() => {
+    (async () => {
+      setTeam(await getTeam(teamId))
+    })();
+  }, [teamId]);
+
   const navigate = useNavigate();
 
   // Selected team to compare with
@@ -18,23 +34,27 @@ export function Team() {
   const [selectedTeamName, setSelectedTeamName] = useState("");
 
   // Data shown
-  const [shownHistory, setShownHistory] = useState([])
-  const [shownSummary, setShownSummary] = useState({});
+  const [shownHistory, setShownHistory] = useState<MatchPlayed[]>([])
+  const [shownSummary, setShownSummary] = useState<TeamExtended>({});
   useEffect(() => {
     if (!team || !history) return; 
     if (!selectedTeamId) {
 
       // Just display normal
       setShownHistory(history);
-      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;// - team.drawGamesTotal;
-      team.winRatio = team.wonGamesTotal / team.playedGamesTotal;
-      setShownSummary(team);
+      const summary = {
+        ...team,
+        lostGamesTotal: team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal,// - team.drawGamesTotal;
+        winRatio: team.wonGamesTotal / team.playedGamesTotal,
+        goalsDifference: team.goalsFor - team.goalsAgainst
+      }
+      setShownSummary(summary);
 
     } else {
 
       // Display comparison data
       setShownHistory(history.filter(record => (record.opponentId === selectedTeamId)));
-      const summary = history.reduce((result, current) => {
+      const summary:TeamExtended = history.reduce((result, current) => {
         if (current.opponentId === selectedTeamId) {
           result.playedGamesTotal++;     
           if (current.win) result.wonGamesTotal++;
@@ -44,14 +64,19 @@ export function Team() {
         }
         return result; 
       }, {
+        ...team,
         wonGamesTotal: 0,
         drawGamesTotal: 0,
         playedGamesTotal: 0,
         goalsAgainst: 0,
-        goalsFor: 0
+        goalsFor: 0,
+        lostGamesTotal: 0,
+        winRatio: 0, 
+        goalsDifference: 0
       });
       summary.lostGamesTotal = summary.playedGamesTotal - summary.wonGamesTotal - summary.drawGamesTotal;
       summary.winRatio = summary.wonGamesTotal / summary.playedGamesTotal;
+      summary.goalsDifference = summary.goalsFor / summary.goalsAgainst;
       setShownSummary(summary)
     }
   }, [team, history, selectedTeamId])
@@ -61,14 +86,14 @@ export function Team() {
       field: 'opponentName',
       headerName: 'Opponent',
       width: 150,
-      renderCell: !selectedTeamId && ((params) => (
+      renderCell: !selectedTeamId && ((params: GridCellParams) => (
           <Button style={{textTransform: "none"}} variant="text" onClick={
             ()=> { 
               setSelectedTeamId(params.row.opponentId); 
               setSelectedTeamName(params.row.opponentName);
             }
           }>
-            {params.value}
+            {params.row.opponentName}
           </Button>
         ))
     },
@@ -76,7 +101,7 @@ export function Team() {
       field: 'win',
       headerName: 'Result',
       width: 150,
-      renderCell: (params) => (
+      renderCell: (params: GridCellParams) => (
         <Box>{params.value ? "Win" : "Loss"}</Box>
       ),
     },
