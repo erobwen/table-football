@@ -1,13 +1,13 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed, MatchResult, Team, TeamExtended } from './interfaces';
+import { Game, MatchPlayed, MatchResult, Player, Team, TeamExtended } from './interfaces';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
   user: 'postgres',
-  // host: 'localhost', // when running outside docker for dev. 
-  host: 'db',
+  host: 'localhost', // when running outside docker for dev. 
+  // host: 'db',
   database: 'postgres',
   password: '1234',
   port: 5432,
@@ -49,12 +49,12 @@ createTables();
  * Players 
  */
 
-export async function getAllPlayers() {
+export async function getAllPlayers(): Promise<Player[]> {
   const result = await client.query(`SELECT * FROM players;`);
   return (result).rows;
 }
 
-export async function getPlayer(id:number) {
+export async function getPlayer(id:number): Promise<Player>{
   return (await client.query(`SELECT * FROM players WHERE players.id=${id};`)).rows[0];
 } 
 
@@ -185,12 +185,12 @@ export function uniqueTeamKey(id1: number|null, id2: number|null) {
   return id1 > id2 ? `${id1}.${id2}` : `${id2}.${id1}`; 
 }
 
-export async function addTeam(name: string, player1Id: number, player2Id: number) {
+export async function addTeam(name: string, player1Id: number|null, player2Id: number|null) {
   const teamKey = uniqueTeamKey(player1Id, player2Id);
 
   if (!name) {
-    const player1 = await getPlayer(player1Id);
-    const player2 = await getPlayer(player2Id);
+    const player1 = await getPlayer(player1Id as number);
+    const player2 = await getPlayer(player2Id as number);
     name = `${player1.name} & ${player2.name}`
   }
 

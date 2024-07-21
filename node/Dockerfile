@@ -6,6 +6,6 @@ COPY . .
 
 RUN npm run build
 
-CMD node dist/api.js
+CMD node dist/app.js
 
 EXPOSE 3000
