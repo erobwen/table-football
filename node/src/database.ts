@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed, MatchResult, Team, TeamExtended } from './interfaces';
+import { Game, MatchPlayed, MatchResult, Player, Team, TeamExtended } from './interfaces.js';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
@@ -49,12 +49,12 @@ createTables();
  * Players 
  */
 
-export async function getAllPlayers() {
+export async function getAllPlayers(): Promise<Player[]> {
   const result = await client.query(`SELECT * FROM players;`);
   return (result).rows;
 }
 
-export async function getPlayer(id:number) {
+export async function getPlayer(id:number): Promise<Player>{
   return (await client.query(`SELECT * FROM players WHERE players.id=${id};`)).rows[0];
 } 
 
@@ -185,12 +185,12 @@ export function uniqueTeamKey(id1: number|null, id2: number|null) {
   return id1 > id2 ? `${id1}.${id2}` : `${id2}.${id1}`; 
 }
 
-export async function addTeam(name: string, player1Id: number, player2Id: number) {
+export async function addTeam(name: string, player1Id: number|null, player2Id: number|null) {
   const teamKey = uniqueTeamKey(player1Id, player2Id);
 
   if (!name) {
-    const player1 = await getPlayer(player1Id);
-    const player2 = await getPlayer(player2Id);
+    const player1 = await getPlayer(player1Id as number);
+    const player2 = await getPlayer(player2Id as number);
     name = `${player1.name} & ${player2.name}`
   }
 
@@ -211,16 +211,18 @@ export async function getPlayerIds(teamId: number) {
  * Games 
  */
 
-export async function addGame(finished: boolean, team1Id: number, team2Id: number, team1Score: number, team2Score: number) {
+export async function addGame(finished: boolean, team1Id: number, team2Id: number, team1Score: number|undefined, team2Score: number|undefined) {
   try {
     await client.query('BEGIN')
 
     // Update statistics
     if (finished) {
-      await updateStatistics(team1Id, team2Id, team1Score, team2Score)
+      await updateStatistics(team1Id, team2Id, team1Score as number, team2Score as number)
     }
 
     // Add game
+    if (!team1Score) team1Score = 0;
+    if (!team2Score) team2Score = 0;
     const response = await client.query(`INSERT INTO games(finished, "team1Id", "team2Id", "team1Score", "team2Score") VALUES(${finished}, ${team1Id}, ${team2Id}, ${team1Score}, ${team2Score}) RETURNING *;`);
     await client.query('COMMIT')
     return response.rows[0]; 
@@ -262,7 +264,7 @@ export async function finishOngoingGame(game: Game) {
   try {
     await client.query('BEGIN')
     await client.query(`UPDATE games SET finished = true WHERE id = ${game.id};`);
-    updateStatistics(game.team1Id, game.team2Id, game.team1Score, game.team2Score);
+    updateStatistics(game.team1Id, game.team2Id, game.team1Score as number, game.team2Score as number);
     await client.query('COMMIT')
   } catch (error) {
     await client.query('ROLLBACK');
