@@ -2,13 +2,14 @@
   "name": "Table Football Tracker API",
   "description": "API for keeping track of players, teams, games and statistics.",
   "version": "1.0.0",
-  "main": "src/app.ts",
+  "main": "dist/app.js",
   "type": "module",
   "scripts": {
     "build-routes": "tsoa spec --basePath /api && tsoa routes --basePath /api",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build-routes && tsx watch src/app.ts",
-    "build": "npm run build-routes && tsc -p ."
+    "build": "npm run build-routes && tsc -p .",
+    "preview": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",

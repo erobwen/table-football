@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed, MatchResult, Player, Team, TeamExtended } from './interfaces';
+import { Game, MatchPlayed, MatchResult, Player, Team, TeamExtended } from './interfaces.js';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({

@@ -1,7 +1,7 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { RegisterRoutes } from "../tsoa_build/routes";
-import openApi from '../tsoa_build/swagger.json?raw'; // Shows as error, but works somehow.
+import { RegisterRoutes } from "./routes.js";
+import openApi from './swagger.json' with { type: "json"};
 
 (async () => {
   const app = express();
@@ -24,7 +24,7 @@ import openApi from '../tsoa_build/swagger.json?raw'; // Shows as error, but wor
   RegisterRoutes(app);
 
   // Swagger auto-generate
-  // const openApi = await fetch('../tsoa_build/swagger.json')
+  // const openApi = await fetch('./swagger.json')
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApi));
 
   // Start

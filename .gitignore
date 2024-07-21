@@ -2,3 +2,5 @@
 data/
 node/dist/**
 node/tsoa_build/
+node/src/routes.ts
+node/src/swagger.json
