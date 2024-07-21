@@ -70,7 +70,7 @@ function HallOfFame({teams}) {
   const columns = [
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: 'Team',
       width: 150,
       renderCell: (params) => (
         <Link to={`/teams/${params.row.id}`}>{params.value}</Link>

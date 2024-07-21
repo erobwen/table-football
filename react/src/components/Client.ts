@@ -26,15 +26,15 @@ export interface TeamExtended extends Team {
   goalsDifference: number
 }
 
-export enum MatchResult {
+export enum GameResult {
   Win = "win",
   Draw = "draw",
   Loss = "loss"
 }
 
-export interface MatchPlayed {
+export interface GameOfTeam {
   id: number,
-  result: MatchResult,
+  result: GameResult,
   opponentId: number,
   opponentName: string,
   yourScore: number,
@@ -92,7 +92,7 @@ export async function getTeam(id:number) : Promise<Team> {
   }
 }
 
-export async function getTeamHistory(id:number) : Promise<MatchPlayed[]>{
+export async function getTeamHistory(id:number) : Promise<GameOfTeam[]>{
   try {
     return (await axios.get(base + `/api/teams/${id}/history`)).data; 
   } catch(error:any) {

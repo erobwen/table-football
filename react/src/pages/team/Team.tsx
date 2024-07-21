@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, Grid, Paper } from "@mui/material";
-import { getTeam, getTeamHistory, MatchPlayed, Team as TeamInterface, TeamExtended, MatchResult } from "../../components/Client";
+import { getTeam, getTeamHistory, GameOfTeam, Team as TeamInterface, TeamExtended, GameResult } from "../../components/Client";
 import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ export function Team() {
   const teamId = parseInt(id);
 
   // History
-  const [history, setHistory] = useState<MatchPlayed[]|null>(null);
+  const [history, setHistory] = useState<GameOfTeam[]|null>(null);
   useEffect(() => {
     (async () => {
       setHistory(await getTeamHistory(teamId))
@@ -34,7 +34,7 @@ export function Team() {
   const [selectedTeamName, setSelectedTeamName] = useState<string|null>("");
 
   // Data shown
-  const [shownHistory, setShownHistory] = useState<MatchPlayed[]>([])
+  const [shownHistory, setShownHistory] = useState<GameOfTeam[]>([])
   const [shownSummary, setShownSummary] = useState<TeamExtended|null>(null);
   useEffect(() => {
     if (!team || !history) return; 
@@ -57,9 +57,9 @@ export function Team() {
       const summary:TeamExtended = history.reduce((result, current) => {
         if (current.opponentId === selectedTeamId) {
           result.playedGamesTotal++;     
-          if (current.result === MatchResult.Win) result.wonGamesTotal++;
-          if (current.result === MatchResult.Draw) result.drawGamesTotal++;
-          if (current.result === MatchResult.Loss) result.lostGamesTotal++;
+          if (current.result === GameResult.Win) result.wonGamesTotal++;
+          if (current.result === GameResult.Draw) result.drawGamesTotal++;
+          if (current.result === GameResult.Loss) result.lostGamesTotal++;
           result.goalsAgainst += current.theirScore; 
           result.goalsFor += current.yourScore; 
         }
@@ -82,7 +82,7 @@ export function Team() {
     }
   }, [team, history, selectedTeamId])
 
-  const columns: GridColDef<MatchPlayed>[] = [
+  const columns: GridColDef<GameOfTeam>[] = [
     {
       field: 'opponentName',
       headerName: 'Opponent',
@@ -93,7 +93,7 @@ export function Team() {
       headerName: 'Result',
       width: 150,
       renderCell: (params: GridCellParams) => (
-        <Box>{params.value === MatchResult.Draw ? "Draw" : (params.value === MatchResult.Win ? "Win" : "Loss")}</Box>
+        <Box>{params.value === GameResult.Draw ? "Draw" : (params.value === GameResult.Win ? "Win" : "Loss")}</Box>
       ),
     },
     {

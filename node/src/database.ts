@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed, MatchResult, Player, Team, TeamExtended } from './interfaces.js';
+import { Game, GameOfTeam, GameResult, Player, Team, TeamExtended } from './interfaces.js';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
@@ -22,16 +22,12 @@ const createTables = async () => {
       id serial PRIMARY KEY
     );
   `);
+  
   const response = await client.query(`SELECT * FROM migrations`);
   if (!response.rows.length) {
 
     // DB Schema
     await client.query(schema);
-
-    // Some dummy data for convenient development.  
-    await addPlayer("Player A");
-    await addPlayer("Player B");
-    await addPlayer("Player C");
 
     // Mark done
     await client.query(`
@@ -43,6 +39,37 @@ const createTables = async () => {
 }
 
 createTables();
+
+
+/**
+ * Setup demo
+ */
+export async function setupDemo(): Promise<undefined> {
+    await clearDatabase();
+
+    // Some dummy data for convenient development.  
+    const [player1Id, team1Id] = await addPlayer("Player A");
+    const [player2Id, team2Id] = await addPlayer("Player B");
+    const [player3Id, team3Id] = await addPlayer("Player C");
+    const [player4Id, team4Id] = await addPlayer("Player D");
+    const team5Id = await addTeam(null, player2Id, player3Id);
+
+    await addGame(true, team1Id, team2Id, 1, 0);
+    await addGame(true, team1Id, team2Id, 3, 2);
+    await addGame(true, team1Id, team2Id, 3, 5);
+    await addGame(true, team1Id, team3Id, 3, 2);
+    await addGame(true, team1Id, team3Id, 4, 2);
+    await addGame(true, team1Id, team3Id, 4, 2);
+    await addGame(true, team1Id, team5Id, 4, 2);
+}
+
+
+export async function clearDatabase() :Promise<undefined> {
+  console.warn("Do not use in production! TODO: Block with ENV");
+  client.query(`DELETE FROM games;`);
+  client.query(`DELETE FROM teams;`);
+  client.query(`DELETE FROM players;`);
+}
 
 
 /**
@@ -66,8 +93,9 @@ export async function addPlayer(name:string) {
     // Auto create a team as well for the player.
     const id = response.rows[0].id; 
     const teamKey = uniqueTeamKey(id, null);
-    await client.query(`INSERT INTO teams("teamKey", name, "player1Id", "player2Id") VALUES('${teamKey}', '${name}', ${id}, NULL);`);
-    await client.query('COMMIT')
+    const teamId = (await client.query(`INSERT INTO teams("teamKey", name, "player1Id", "player2Id") VALUES('${teamKey}', '${name}', ${id}, NULL) RETURNING id;`)).rows[0].id;
+    await client.query('COMMIT');
+    return [id, teamId];
   } catch (error) {
     await client.query('ROLLBACK');
     throw error; 
@@ -110,7 +138,7 @@ export async function getTeam(id: number) {
   return (await client.query(`SELECT * FROM teams WHERE teams.id=${id};`)).rows[0];
 } 
 
-export async function getTeamGameHistory(id: number) : Promise<MatchPlayed[]> {
+export async function getTeamGameHistory(id: number) : Promise<GameOfTeam[]> {
   return (changePerspective(id, (
     await client.query(`
       SELECT games.id, "team1Id", "team2Id", "team1Score", "team2Score", team1.name as "team1Name", team2.name as "team2Name" FROM games 
@@ -122,7 +150,7 @@ export async function getTeamGameHistory(id: number) : Promise<MatchPlayed[]> {
 }
 
 // Note: not in use currently, taken care of on front end to avoid extra load. 
-export async function getSharedGameHistory(id: number, otherId: number) : Promise<MatchPlayed[]> { 
+export async function getSharedGameHistory(id: number, otherId: number) : Promise<GameOfTeam[]> { 
   return (changePerspective(id, (await client.query(`
     SELECT games.id, "team1Id", "team2Id", "team1Score", "team2Score", team1.name as "team1Name", team2.name as "team2Name" FROM games 
     JOIN teams as team1 ON games."team1Id"=team1.id
@@ -141,15 +169,15 @@ interface GamePlayedUnprocessed {
   team2Name: string
 }
 
-const changePerspective = (id:number, gameHistory:GamePlayedUnprocessed[]) : MatchPlayed[] => {
+const changePerspective = (id:number, gameHistory:GamePlayedUnprocessed[]) : GameOfTeam[] => {
   return gameHistory.map(
     (game) => {
       if (game.team1Id === id) {
         // team1Id perspective
         return ({
           id: game.id,
-          result: game.team1Score === game.team2Score ? MatchResult.Draw: (
-            game.team1Score > game.team2Score ? MatchResult.Win : MatchResult.Loss
+          result: game.team1Score === game.team2Score ? GameResult.Draw: (
+            game.team1Score > game.team2Score ? GameResult.Win : GameResult.Loss
           ),
           opponentId: game.team2Id,
           opponentName: game.team2Name,
@@ -161,8 +189,8 @@ const changePerspective = (id:number, gameHistory:GamePlayedUnprocessed[]) : Mat
         // team12d perspective
         return ({
           id: game.id,
-          result: game.team2Score === game.team1Score ? MatchResult.Draw : (
-            game.team2Score > game.team1Score ? MatchResult.Win : MatchResult.Loss
+          result: game.team2Score === game.team1Score ? GameResult.Draw : (
+            game.team2Score > game.team1Score ? GameResult.Win : GameResult.Loss
           ),
           win: game.team2Score > game.team1Score,
           draw: game.team1Score === game.team2Score,
@@ -185,7 +213,7 @@ export function uniqueTeamKey(id1: number|null, id2: number|null) {
   return id1 > id2 ? `${id1}.${id2}` : `${id2}.${id1}`; 
 }
 
-export async function addTeam(name: string, player1Id: number|null, player2Id: number|null) {
+export async function addTeam(name: string|null, player1Id: number|null, player2Id: number|null): Promise<number> {
   const teamKey = uniqueTeamKey(player1Id, player2Id);
 
   if (!name) {
@@ -194,8 +222,8 @@ export async function addTeam(name: string, player1Id: number|null, player2Id: n
     name = `${player1.name} & ${player2.name}`
   }
 
-  await client.query(`INSERT INTO teams("teamKey", name, "player1Id", "player2Id") VALUES ('${teamKey}', '${name}', ${player1Id}, ${player2Id});`); 
-  return teamKey;
+  const result = await client.query(`INSERT INTO teams("teamKey", name, "player1Id", "player2Id") VALUES ('${teamKey}', '${name}', ${player1Id}, ${player2Id}) RETURNING id;`); 
+  return result.rows[0].id;
 }
 
 export async function getPlayerIds(teamId: number) {

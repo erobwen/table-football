@@ -23,15 +23,15 @@ export interface TeamExtended extends Team {
   goalsDifference: number
 }
 
-export enum MatchResult {
+export enum GameResult {
   Win = "win",
   Draw = "draw",
   Loss = "loss"
 }
 
-export interface MatchPlayed {
+export interface GameOfTeam {
   id: number,
-  result: MatchResult,
+  result: GameResult,
   opponentId: number,
   opponentName: string,
   yourScore: number,

@@ -1,7 +1,7 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { RegisterRoutes } from "./routes.js";
-import openApi from './swagger.json' with { type: "json"};
+import { RegisterRoutes } from "../tsoa-build/routes.js";
+import openApi from '../tsoa-build/swagger.json' with { type: "json"};
 
 (async () => {
   const app = express();

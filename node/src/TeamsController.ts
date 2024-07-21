@@ -1,6 +1,6 @@
 import { addGame, addTeam, addPlayer, getAllTeams, getAllPlayers, getOngoingGame, getTeam, getPlayerIds, getTeamGameHistory, getAllTeamsSorted, ongoingGameChanged } from './database.js'; 
 import { Body, Controller, Get, Path, Post, Route, SuccessResponse, Response, Put } from "tsoa";
-import { MatchPlayed, Player, Game, Team, TeamExtended } from './interfaces.js';
+import { GameOfTeam, Player, Game, Team, TeamExtended } from './interfaces.js';
 
 
 /**
@@ -31,7 +31,7 @@ export class TeamsController extends Controller {
   }
 
   @Get("{id}/history")
-  public async getTeamHistory(@Path() id:string): Promise<MatchPlayed[]> {
+  public async getTeamHistory(@Path() id:string): Promise<GameOfTeam[]> {
     const result = await getTeamGameHistory(parseInt(id));
     this.setStatus(200);
     return result; 
