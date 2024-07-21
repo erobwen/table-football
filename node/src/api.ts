@@ -1,4 +1,5 @@
-import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlayers, getOngoingGame, getTeam, updateOngoingGame, getPlayerIds, getTeamGameHistory } from './database.js'; 
+import { addGame, addTeam, addPlayer, finishOngoingGame, getAllTeams, getAllPlayers, getOngoingGame, getTeam, updateOngoingGame, getPlayerIds, getTeamGameHistory, getAllTeamsSorted, ongoingGameChanged } from './database.js'; 
+import { Game } from './interfaces.js';
 
 import express from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -121,26 +122,7 @@ app.get('/api/teams', async (req, res) => {
  */
 app.get('/api/teams/sorted', async (req, res) => {
   try {
-    const teams = await getAllTeams();
-    for (let team of teams) {
-      team.winRatio = team.playedGamesTotal > 0 ? team.wonGamesTotal / team.playedGamesTotal : "N/A";
-      team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;
-      team.goalsDifference = team.goalsFor - team.goalsAgainst;
-    }
-    teams.sort((t1:TeamExtended, t2:TeamExtended) => {
-      const t1w = t1.winRatio;
-      const t2w = t2.winRatio;
-      if (typeof(t1w) === "number" && typeof(t2w) === "number") {
-        return t2w - t1w;
-      } else if (t1w === "N/A" && t2w === "N/A") {
-        return 0;
-      } else if (t1w === "N/A") {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
-    res.status(200).send(teams);
+    res.status(200).send( await getAllTeamsSorted());
   } catch (error) {
     res.status(500).send(error);
   } 
@@ -228,6 +210,12 @@ app.post('/api/teams', async (req, res) => {
  * /api/games:
  *    post:
  *      description: Create a game.
+ *      requestBody: 
+ *        required: true,
+ *        content:
+ *          application/json:
+ *            schema:
+ *              @type{Game}
  *    responses:
  *      '200':
  *        description: Normal response
@@ -303,11 +291,7 @@ app.get('/api/ongoing-game', async (req, res) => {
 app.put('/api/ongoing-game', async (req, res) => {
   let game = req.body;
   try {
-    if (game.finished) {
-      await finishOngoingGame(game);
-    } else {
-      await updateOngoingGame(game); 
-    }
+    ongoingGameChanged(game);
     res.status(200).send("Updated game status!");
   } catch (error:any) {
     console.log(error);

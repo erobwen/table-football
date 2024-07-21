@@ -1,7 +1,7 @@
 import pg from 'pg';
 const { Client } = pg;
 import * as fs from 'fs';
-import { Game, MatchPlayed, MatchResult } from './interfaces';
+import { Game, MatchPlayed, MatchResult, Team, TeamExtended } from './interfaces';
 var schema = fs.readFileSync('schema.sql').toString();
 
 export const client = new Client({
@@ -79,8 +79,31 @@ export async function addPlayer(name:string) {
  * Teams 
  */
 
-export async function getAllTeams() {
+export async function getAllTeams() : Promise<Team[]> {
   return (await client.query(`SELECT * FROM teams`)).rows;
+}
+
+export async function getAllTeamsSorted() : Promise<TeamExtended[]> {
+  const teams = (await client.query(`SELECT * FROM teams`)).rows;
+  for (let team of teams) {
+    team.winRatio = team.playedGamesTotal > 0 ? team.wonGamesTotal / team.playedGamesTotal : "N/A";
+    team.lostGamesTotal = team.playedGamesTotal - team.wonGamesTotal - team.drawGamesTotal;
+    team.goalsDifference = team.goalsFor - team.goalsAgainst;
+  }
+  teams.sort((t1:TeamExtended, t2:TeamExtended) => {
+    const t1w = t1.winRatio;
+    const t2w = t2.winRatio;
+    if (typeof(t1w) === "number" && typeof(t2w) === "number") {
+      return t2w - t1w;
+    } else if (t1w === "N/A" && t2w === "N/A") {
+      return 0;
+    } else if (t1w === "N/A") {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+  return teams;
 }
 
 export async function getTeam(id: number) {
@@ -214,6 +237,14 @@ export async function addGame(finished: boolean, team1Id: number, team2Id: numbe
 
 export async function getOngoingGame() {
   return (await client.query(`SELECT * FROM games WHERE games.finished=false;`)).rows[0];
+}
+
+export async function ongoingGameChanged(game: Game) {
+  if (game.finished) {
+    await finishOngoingGame(game);
+  } else {
+    await updateOngoingGame(game); 
+  }
 }
 
 export async function updateOngoingGame(game: Game) {
