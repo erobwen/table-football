@@ -1,17 +1,7 @@
-import { addGame, addTeam, addPlayer, getAllTeams, getAllPlayers, getOngoingGame, getTeam, getPlayerIds, getTeamGameHistory, getAllTeamsSorted, ongoingGameChanged } from './database.js'; 
+import { getOngoingGame, ongoingGameChanged } from './database.js'; 
+import { Body, Controller, Get, Path, Post, Route, SuccessResponse, Response, Put } from "tsoa";
+import { Game } from './interfaces.js';
 
-import {
-  Body,
-  Controller,
-  Get,
-  Path,
-  Post,
-  Route,
-  SuccessResponse,
-  Response,
-  Put,
-} from "tsoa";
-import { MatchPlayed, Player, Game, Team, TeamExtended } from './interfaces.js';
 
 /**
  * Games controller

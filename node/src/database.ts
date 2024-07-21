@@ -211,16 +211,18 @@ export async function getPlayerIds(teamId: number) {
  * Games 
  */
 
-export async function addGame(finished: boolean, team1Id: number, team2Id: number, team1Score: number, team2Score: number) {
+export async function addGame(finished: boolean, team1Id: number, team2Id: number, team1Score: number|undefined, team2Score: number|undefined) {
   try {
     await client.query('BEGIN')
 
     // Update statistics
     if (finished) {
-      await updateStatistics(team1Id, team2Id, team1Score, team2Score)
+      await updateStatistics(team1Id, team2Id, team1Score as number, team2Score as number)
     }
 
     // Add game
+    if (!team1Score) team1Score = 0;
+    if (!team2Score) team2Score = 0;
     const response = await client.query(`INSERT INTO games(finished, "team1Id", "team2Id", "team1Score", "team2Score") VALUES(${finished}, ${team1Id}, ${team2Id}, ${team1Score}, ${team2Score}) RETURNING *;`);
     await client.query('COMMIT')
     return response.rows[0]; 
@@ -262,7 +264,7 @@ export async function finishOngoingGame(game: Game) {
   try {
     await client.query('BEGIN')
     await client.query(`UPDATE games SET finished = true WHERE id = ${game.id};`);
-    updateStatistics(game.team1Id, game.team2Id, game.team1Score, game.team2Score);
+    updateStatistics(game.team1Id, game.team2Id, game.team1Score as number, game.team2Score as number);
     await client.query('COMMIT')
   } catch (error) {
     await client.query('ROLLBACK');

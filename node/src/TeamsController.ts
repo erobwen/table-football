@@ -47,7 +47,7 @@ export class TeamsController extends Controller {
     if (player2Id === "") player2Id = null;
     if (player1Id === player2Id) {
       this.setStatus(400);
-      return "Players needs to be different in a team."; 
+      return "Cannot add the same player twice in the same team."; 
     }
   
     try {

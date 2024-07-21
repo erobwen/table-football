@@ -43,12 +43,12 @@ export interface MatchPlayed {
 }
 
 export interface Game {
-  id: number,
+  id?: number,
   finished: boolean,
   team1Id: number, 
   team2Id: number, 
-  team1Score: number, 
-  team2Score: number 
+  team1Score?: number, 
+  team2Score?: number 
 }
 
 export async function getPlayers(): Promise<Player[]> {

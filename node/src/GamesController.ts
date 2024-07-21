@@ -29,7 +29,7 @@ export class GamesController extends Controller {
       }
     }
   
-    if (team1Score < 0 || team2Score < 0) {
+    if (team1Score && team1Score < 0 || team2Score && team2Score < 0) {
       this.setStatus(400);
       return "Negative score not possible!";
     }

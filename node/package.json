@@ -5,13 +5,13 @@
   "main": "src/app.ts",
   "type": "module",
   "scripts": {
+    "build-routes": "tsoa spec --basePath /api && tsoa routes --basePath /api",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsoa spec-and-routes . && tsx watch src/app.ts",
-    "build": "tsoa spec-and-routes . && tsc -p ."
+    "start": "npm run build-routes && tsx watch src/app.ts",
+    "build": "npm run build-routes && tsc -p ."
   },
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^4.19.2",
     "pg": "^8.12.0",
