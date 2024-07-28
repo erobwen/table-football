@@ -1,6 +1,6 @@
 # About 
 
-This is a table football score tracker, full stack application. It was built in around 16 hours of work, and runs fully dockerized, with an open-api/swagger definition for the back end and React for the front end.
+This is a table football score tracker, full stack application. It was built in around 16 hours of work, and runs fully dockerized with an open-api/swagger definition for the back end and React for the front end. The application has 4 modal forms, and 3 different pages, one with a filter to warch team on team statistics. 
 
 The backend is built using Node.js and Typescript, using tsoa to generate paths and swagger specifications automatically. All data is stored in a Postgres-SQL database.
 
@@ -25,8 +25,13 @@ To quickly add some demo data to your database, you can send POST to the http://
 # Screenshots
 
 ![Alt text](/screenshot1.png?raw=true "Screenshot 1")
+*Main screen*
+
 ![Alt text](/screenshot2.png?raw=true "Screenshot 2")
+*Statistics between two selected teams*
+
 ![Alt text](/screenshot3.png?raw=true "Screenshot 3")
+*Ongoing game screen*
 
 # Develop
 
